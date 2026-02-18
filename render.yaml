@@ -1,29 +1,21 @@
 services:
-  # Private OpenClaw gateway (not publicly routable)
-  - type: pserv
-    name: openclaw-gateway
-    env: node
-    plan: starter
-    buildCommand: npm install -g openclaw
-    startCommand: openclaw gateway --port 18789 --bind custom
-    envVars:
-      - key: OPENCLAW_GATEWAY_PORT
-        value: "18789"
-      - key: OPENCLAW_GATEWAY_TOKEN
-        sync: false
-
-  # Public edge proxy with HTTP Basic Auth in front of the gateway
   - type: web
-    name: openclaw-edge
-    env: docker
+    name: openclaw
+    runtime: docker
     plan: starter
-    dockerfilePath: ./deploy/edge/Dockerfile
-    healthCheckPath: /
+    healthCheckPath: /health
     envVars:
-      # Format: user:$2y$... (bcrypt), e.g. output of: htpasswd -nbB youruser "your-password"
-      - key: BASIC_AUTH_HTPASSWD_LINE
+      - key: PORT
+        value: "8080"
+      - key: SETUP_PASSWORD
         sync: false
-      - key: UPSTREAM_HOST
-        value: openclaw-gateway
-      - key: UPSTREAM_PORT
-        value: "18789"
+      - key: OPENCLAW_STATE_DIR
+        value: /data/.openclaw
+      - key: OPENCLAW_WORKSPACE_DIR
+        value: /data/workspace
+      - key: OPENCLAW_GATEWAY_TOKEN
+        generateValue: true
+    disk:
+      name: openclaw-data
+      mountPath: /data
+      sizeGB: 1
