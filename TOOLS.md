@@ -41,8 +41,10 @@ Things like:
 
 - `~/.ssh/id_ed25519_github_openclaw` → SSH key associated with the **OpenClaw backup repo** (`George-Twiniti/OpenClaw`)
 - Public export copied to `github-openclaw.pub`
+- SSH host alias: `github.com-openclaw`
 - `~/.ssh/id_ed25519_github_second_brain` → SSH key reserved for the **Second-Brain repo** (`George-Twiniti/Second-Brain`)
 - Public export copied to `github-second-brain.pub`
+- SSH host alias: `github.com-second-brain`
 - Keep these repo-specific keys labeled separately to avoid mixing deploy/access credentials between repos
 
 ## Why Separate?
