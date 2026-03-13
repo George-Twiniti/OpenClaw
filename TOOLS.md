@@ -25,11 +25,23 @@ Things like:
 
 - home-server → 192.168.1.100, user: admin
 
+### GitHub Keys
+
+- ~/.ssh/id_ed25519_github_openclaw → deploy/access key for OpenClaw backup repo
+
 ### TTS
 
 - Preferred voice: "Nova" (warm, slightly British)
 - Default speaker: Kitchen HomePod
 ```
+
+## Local Notes
+
+### GitHub Keys
+
+- `~/.ssh/id_ed25519_github_openclaw` → SSH key associated with the **OpenClaw backup repo** (`George-Twiniti/OpenClaw`)
+- Public export copied to `github-openclaw.pub`
+- This key is for the OpenClaw backup repo and should be treated/labeled that way to avoid confusion with future repo-specific keys (for example `Second-Brain`)
 
 ## Why Separate?
 
