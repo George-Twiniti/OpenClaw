@@ -1,0 +1,64 @@
+{
+  "updatedAt": "2026-03-25T15:24:00+00:00",
+  "notes": [
+    "Lightweight provider-health tracker for operational routing decisions.",
+    "Update this when a provider/model fails, recovers, or is intentionally reconfigured.",
+    "Use this as an evidence log; do not assume availability without a successful test."
+  ],
+  "providers": {
+    "openai-codex/gpt-5.4": {
+      "state": "rate_limited",
+      "lastError": "API rate limit reached. Please try again later.",
+      "firstFailureAt": "2026-03-25T14:12:00+00:00",
+      "lastFailureAt": "2026-03-25T14:12:00+00:00",
+      "lastSuccessAt": null,
+      "cooldownMinutes": 30,
+      "retryAfter": null,
+      "notes": [
+        "OAuth-backed OpenAI path is valid, but currently rate-limited.",
+        "When cooldown expires, allow one retry and extend cooldown if it fails again immediately."
+      ]
+    },
+    "openai/gpt-5.2": {
+      "state": "misconfigured",
+      "lastError": "No API key found for provider \"openai\". You are authenticated with OpenAI Codex OAuth.",
+      "lastFailureAt": "2026-03-25T14:12:00+00:00",
+      "notes": [
+        "Do not use openai/* API-key models unless an OpenAI API key is intentionally configured.",
+        "Current auth mode is OpenAI Codex OAuth, so openai-codex/* is the compatible path."
+      ]
+    },
+    "ollama/kimi-k2.5:cloud": {
+      "state": "unavailable",
+      "lastError": "model 'kimi-k2.5:cloud' not found",
+      "lastFailureAt": "2026-03-25T14:07:00+00:00",
+      "notes": [
+        "Configured in OpenClaw, but current local Ollama endpoint does not recognize this model.",
+        "Treat Ollama Cloud as unavailable until a real success is observed."
+      ]
+    },
+    "ollama/qwen3:8b": {
+      "state": "usable",
+      "lastCheckedAt": null,
+      "notes": [
+        "Known local fallback path.",
+        "May be slow, but it is the current likely low-cost working option."
+      ]
+    }
+  },
+  "policy": {
+    "preferKnownGoodProviders": true,
+    "avoidKnownBadProviders": true,
+    "retryCooldownStrategy": {
+      "rateLimitedInitialMinutes": 30,
+      "rateLimitedBackoffMinutes": 60,
+      "singleProbeAfterCooldown": true
+    },
+    "routingNotes": [
+      "Main session now uses ollama/qwen3.5:cloud as primary (confirmed working).",
+      "Do not route to openai/* unless API-key auth is intentionally restored.",
+      "Ollama Cloud (qwen3.5:cloud) is now proven available on both local and Oracle endpoints.",
+      "Oracle server (129.159.181.219) is ready for 24x7 OpenClaw deployment with Ollama installed."
+    ]
+  }
+}

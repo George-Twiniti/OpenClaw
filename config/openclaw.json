@@ -94,9 +94,7 @@
     "elevated": {
       "enabled": true,
       "allowFrom": {
-        "webchat": [
-          "id:openclaw-control-ui"
-        ]
+        "webchat": ["webchat", "id:openclaw-control-ui"]
       }
     }
   },
@@ -107,13 +105,14 @@
     "native": "auto",
     "nativeSkills": "auto",
     "restart": true,
-    "ownerDisplay": "raw"
+    "ownerDisplay": "raw",
+    "bash": true
   },
   "channels": {
     "telegram": {
       "enabled": true,
       "dmPolicy": "allowlist",
-      "botToken": "7621122263:AAEkiAor5iy_6Cj3uSHf6eb2htgl2W7P7wM",
+      "tokenFile": "/home/george/.openclaw/workspace/secrets/telegram-bot-token.txt",
       "allowFrom": [
         "1408214287"
       ],

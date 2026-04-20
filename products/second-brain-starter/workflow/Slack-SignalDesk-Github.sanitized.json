@@ -1,0 +1,952 @@
+{
+  "name": "Slack - SignalDesk- Github",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": [
+          "message"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C0A8SSNNPEZ",
+          "mode": "list",
+          "cachedResultName": "daily-log"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        -80
+      ],
+      "id": "7bde2404-685b-4969-9789-0d00b47b47c8",
+      "name": "Slack Trigger",
+      "webhookId": "<WEBHOOK_ID>",
+      "credentials": {
+        "slackApi": {
+          "id": "<CRED_ID>",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const m = $json;\n\n// Pull mapping from the Set node\nconst cfg = {\n  dbId:$('Config').first().json.db.thought_log.id,\n  properties: {\n    title: { name: \"Thought ID\", type: \"title\" },\n    archived: { name: \"Archived\", type: \"checkbox\" },\n    capturedDate: { name: \"Captured Date\", type: \"date\" },\n    confidence: { name: \"Confidence\", type: \"number\" },\n    intent: { name: \"Intent\", type: \"select\" },\n    routedToSignalDesk: { name: \"Routed to SignalDesk\", type: \"checkbox\" },\n    sensitivity: { name: \"Sensitivity\", type: \"select\" },\n    source: { name: \"Source\", type: \"select\" },\n    sourceUrl: { name: \"Source URL\", type: \"url\" },\n    urgencyHint: { name: \"Urgency Hint\", type: \"select\" },\n    dailySummary: { name: \"Daily Summary\", type: \"relation\" },\n    decisions: { name: \"Decisions\", type: \"relation\" },\n    entities: { name: \"Entities\", type: \"relation\" },\n    signals: { name: \"Signals\", type: \"relation\" },\n    sourceEventId: { name: \"Source Event ID\", type: \"rich_text\" },\n    author: { name: \"Author\", type: \"rich_text\" },\n    rawText: { name: \"Raw Text\", type: \"rich_text\" },\n    normalizedText: { name: \"Normalized Text\", type: \"rich_text\" }\n  },\n  defaults: {\n    sourceSelect: \"Slack\",\n    intentSelect: \"Other\",\n    urgencySelect: \"Normal\",\n    sensitivitySelect: \"Professional\",\n    archived: false,\n    routedToSignalDesk: false\n  }\n};\n\nconst P = cfg.properties;\nconst D = cfg.defaults;\n\n// Slack fields (from your Slack Trigger)\nconst channel_id = (m.channel || \"\").toString();\nconst user_id = (m.user || \"\").toString();\nconst text = (m.text || \"\").toString();\n\nconst ts = (m.ts || \"\").toString();\nconst event_ts = (m.event_ts || \"\").toString();\nconst client_msg_id = (m.client_msg_id || \"\").toString();\n\n// Prefer client_msg_id for dedupe\nconst source_event_id = client_msg_id\n  ? `slack:msg:${channel_id}:${client_msg_id}`\n  : `slack:msg:${channel_id}:${ts || event_ts}`;\n\n// Deterministic thought id\nconst thought_id = client_msg_id\n  ? `th_${channel_id}_${client_msg_id}`\n  : `th_${channel_id}_${ts || event_ts}`;\n\n// Lisbon local date (requires n8n host TZ=Europe/Lisbon)\nconst captured_date = new Date().toLocaleDateString(\"en-CA\"); // YYYY-MM-DD\n\n// Helper to build Notion property objects by type\nfunction notionProp(type, value) {\n  if (value === undefined || value === null) return null;\n\n  switch (type) {\n    case \"title\":\n      return { title: [{ text: { content: String(value) } }] };\n    case \"rich_text\":\n      return { rich_text: [{ text: { content: String(value) } }] };\n    case \"select\":\n      return { select: { name: String(value) } };\n    case \"number\":\n      return { number: Number(value) };\n    case \"checkbox\":\n      return { checkbox: Boolean(value) };\n    case \"url\":\n      return { url: String(value) };\n    case \"date\":\n      return { date: { start: String(value) } };\n    default:\n      // relations handled elsewhere; ignore here\n      return null;\n  }\n}\n\n// Build Notion properties using the mapping\nconst properties = {};\n\n// Title\nproperties[P.title.name] = notionProp(P.title.type, thought_id);\n\n// Core fields\nproperties[P.source.name] = notionProp(P.source.type, D.sourceSelect);\nproperties[P.capturedDate.name] = notionProp(P.capturedDate.type, captured_date);\nproperties[P.archived.name] = notionProp(P.archived.type, D.archived);\nproperties[P.routedToSignalDesk.name] = notionProp(P.routedToSignalDesk.type, D.routedToSignalDesk);\n\n// Optional classification defaults (safe if these selects exist)\nproperties[P.intent.name] = notionProp(P.intent.type, D.intentSelect);\nproperties[P.urgencyHint.name] = notionProp(P.urgencyHint.type, D.urgencySelect);\nproperties[P.sensitivity.name] = notionProp(P.sensitivity.type, D.sensitivitySelect);\n\n// Capture metadata + text (these must exist in Notion or Notion will 400)\nproperties[P.sourceEventId.name] = notionProp(P.sourceEventId.type, source_event_id);\nproperties[P.author.name] = notionProp(P.author.type, user_id);\nproperties[P.rawText.name] = notionProp(P.rawText.type, text.slice(0, 1900));\nproperties[P.normalizedText.name] = notionProp(P.normalizedText.type, text.trim().slice(0, 1900));\n\n// Optional permalink -> map to Source URL if you add it later\n// If you add a Slack permalink fetch node, set m.permalink and uncomment:\n// properties[P.sourceUrl.name] = notionProp(P.sourceUrl.type, m.permalink);\n\n// Remove null props (important)\nfor (const k of Object.keys(properties)) {\n  if (properties[k] === null) delete properties[k];\n}\n\n// Final Notion create page payload\nconst notion_payload = {\n  parent: { database_id: cfg.dbId },\n  properties\n};\n\n// Slack context for SD\nconst slack_ctx = {\n  channel_id,\n  message_ts: ts || event_ts,\n  thread_ts: (m.thread_ts || m.threadTs || ts || event_ts || \"\").toString(),\n  captured_by_user_id: user_id,\n  raw_text: text,\n  normalized_text: text.trim(),\n  slack: {\n    team_id: (m.team || \"\").toString(),\n    channel_id,\n    channel_type: (m.channel_type || \"\").toString(),\n    user_id,\n    client_msg_id\n  }\n};\n\nreturn [{\n  source_event_id,\n  thought_id,\n  captured_date,\n  notion_payload,\n  slack_ctx\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        -64
+      ],
+      "id": "fc2a022f-e852-497e-b039-69628f59c3e0",
+      "name": "Build Payloads"
+    },
+    {
+      "parameters": {
+        "jsCode": "const slackCtx = $node[\"Build Payloads\"].json.slack_ctx;\nconst text = (slackCtx?.normalized_text || '').toString();\n\nconst notionPageId = $node[\"HTTP Request - Notion\"].json.id;\nconst notionUrl = $node[\"HTTP Request - Notion\"].json.url;\n\nconst cleaned = text.replace(/^(!|sd:)\\s*/i, '').trim();\n\nlet cognitionType = 'signal';\nif (/^task:/i.test(text)) cognitionType = 'task_hint';\nif (/^risk:/i.test(text)) cognitionType = 'risk';\nif (/^blocker:/i.test(text)) cognitionType = 'blocker';\nif (/^decision:/i.test(text)) cognitionType = 'decision';\n\nconst sd_payload = {\n  source: 'slack',\n  source_event_id: $node[\"Build Payloads\"].json.source_event_id,\n  cognitionType,\n  title: cleaned.slice(0, 180),\n  body: cleaned.slice(0, 5000),\n  externalThoughtIds: [$node[\"Build Payloads\"].json.thought_id],\n  externalRefs: {\n    notion: { pageId: notionPageId, url: notionUrl },\n    slack: {\n      channel: slackCtx?.channel_id,\n      ts: slackCtx?.message_ts,\n      user: slackCtx?.captured_by_user_id\n    }\n  }\n};\n\nreturn [{ sd_payload }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        224
+      ],
+      "id": "bab45f58-8280-4a61-9b57-80673f4c0132",
+      "name": "Build SD Ingest Payload"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=  https://signaldesk.onrender.com/api/ingest/slack/signal",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.sd_payload}}\n",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1520,
+        224
+      ],
+      "id": "a919ad5f-56be-48de-850a-9701a2769fc5",
+      "name": "POST to SignalDesk (cognition_item)",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "<CRED_ID>",
+          "name": "SignalDesk Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://signaldesk.onrender.com/api/ingest/slack/signal",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $env.NOTION_API_KEY}}"
+            },
+            {
+              "name": "Notion-Version",
+              "value": "={{$env.NOTION_VERSION || '2022-06-28'}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1744,
+        224
+      ],
+      "id": "d66f42b7-2c2d-4a9a-bc9f-6d15ccf203ad",
+      "name": "Notion Update (write SD id)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "<REDACTED>"
+            },
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$node[\"Build Payloads\"].json.notion_payload}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        496,
+        32
+      ],
+      "id": "7864aefc-37ba-46ab-98d5-8bfc30bd150e",
+      "name": "HTTP Request - Notion",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "<CRED_ID>",
+          "name": "Notion Bearer Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "09d72dd8-dffb-418b-a781-d06a4d7be8a1",
+              "leftValue": "={{ $json.property_source_event_id }}",
+              "rightValue": "=0",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true,
+          "looseTypeValidation": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        272,
+        -64
+      ],
+      "id": "80a63781-f13f-4514-b3c7-5b58dc9d9461",
+      "name": "Already Processed"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -448
+      ],
+      "id": "8334bc94-e7ff-4539-b569-360df33d68be",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a classification agent for a “second brain” system.\n\nCaptured Thouht:  {{ $('Build Payloads').item.json.notion_payload.properties[\"Raw Text\"].rich_text[0].text.content }}\n\nContext:\n- Source: Slack daily log\n- Purpose: personal + professional second brain\n\nYour only job is to decide whether a captured thought should be promoted into an operational cognition system (SignalDesk), and if so, how it should be typed.\n\nSignalDesk is used only for:\n\ndecisions\n\nrisks\n\nblockers\n\nemerging signals\n\nexecution-relevant insights\n\nMost daily thoughts should NOT be promoted.\n\nBe conservative.\nOnly promote items that have potential operational, strategic, or decision impact.\n\nYou must output only valid JSON that matches the schema below.\n\n{\n  \"route_to_sd\": boolean,\n  \"cognitionType\": \"signal | decision | risk | blocker | task_hint | insight | none\",\n  \"confidence\": number,\n  \"short_title\": string,\n  \"reason\": string\n}\n\n\nDo not include commentary."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        720,
+        416
+      ],
+      "id": "08055e69-4d44-4ada-ba89-014cf357f936",
+      "name": "Route to SD Decision",
+      "credentials": {
+        "openAiApi": {
+          "id": "<CRED_ID>",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        416
+      ],
+      "id": "d06a9b5c-08d4-4f6f-90f6-7717f8c98f88",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "39c61fd7-e852-4eed-9050-a08310693fd7",
+              "leftValue": "={{ $json.route_to_sd }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        416
+      ],
+      "id": "c9c94ac1-0da7-4d7a-b7e7-344de84e2136",
+      "name": "Route to SD Y-N"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b5003136-7ec2-4dca-8e1f-6508d893a13e",
+                    "leftValue": "={{ $('Create MD').item.json.output[0].content[0].text.routes[0].db }}",
+                    "rightValue": "none",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "none"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Create MD').item.json.output[0].content[0].text.routes[0].db }}",
+                    "rightValue": "people",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "11bb757e-3955-47f3-bd05-5ceed42438b1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "People"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9b867320-7c01-4d71-86fd-9d5867e95722",
+                    "leftValue": "={{ $('Create MD').item.json.output[0].content[0].text.routes[0].db }}",
+                    "rightValue": "projects",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Projects"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0c85a358-b6fe-411e-907d-ddcfe1c83c03",
+                    "leftValue": "={{ $('Create MD').item.json.output[0].content[0].text.routes[0].db }}",
+                    "rightValue": "Ideas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ideas"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "11b38a9b-a34c-4343-a403-3b0c3e4bd850",
+                    "leftValue": "={{ $('Create MD').item.json.output[0].content[0].text.routes[0].db }}",
+                    "rightValue": "entities",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Entities"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1168,
+        -320
+      ],
+      "id": "80537dae-fe32-4cf7-81a6-9d3d11991562",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        -544
+      ],
+      "id": "ea9dc3ea-6ab8-4703-8dc0-1d00a7eaa357",
+      "name": "End"
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "search",
+        "text": "={{ $json.source_event_id }}",
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "6e3befa2-4623-4f34-a16b-03609ee0705b",
+      "name": "Search Notion DB",
+      "alwaysOutputData": true,
+      "credentials": {
+        "notionApi": {
+          "id": "<CRED_ID>",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"db\": {\n    \"thought_log\": {\n      \"id\": \"1c4f2c9a46004f25aad97417e4a589af\",\n      \"name\": \"Thought Log\"\n    },\n    \"entities\": {\n      \"id\": \"6945069ecf694cf9ae35447d98ba80c4\",\n      \"name\": \"Entities\"\n    },\n    \"projects\": {\n      \"id\": \"8df8e9ac-3cd7-456f-8924-c721925a9053\",\n      \"name\": \"Projects\"\n    },\n    \"ideas\": {\n      \"id\": \"a4f9a6c3-1fd9-46ae-b3e7-ebd1c32715df\",\n      \"name\": \"Ideas\"\n    },\n    \"signals\": {\n      \"id\": \"f4c8b45d-7f07-443a-9984-77ef0adbca42\",\n      \"name\": \"Signals\"\n    },\n    \"decisions\": {\n      \"id\": \"d7b79b2c-93c7-4550-9398-f8ccf5467bf3\",\n      \"name\": \"Decisions & Loops\"\n    },\n    \"daily_summaries\": {\n      \"id\": \"4d406f04-91d3-42e1-9a5d-db5342d8c3d5\",\n      \"name\": \"Daily Summaries\"\n    },\n    \"reference\": {\n      \"id\": \"3d7cff5b-d41c-4153-8485-1005c7ef95f3\",\n      \"name\": \"Reference\"\n    }\n  },\n  \"props\": {\n    \"thought_log\": {\n      \"dedupe_property\": \"Source Event ID\",\n      \"title_property\": \"Thought ID\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        128
+      ],
+      "id": "7aa86e34-2714-4f59-9a3b-25753e076e84",
+      "name": "Config"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -400,
+        -64
+      ],
+      "id": "7fb17d5f-1696-4b4f-8340-2507f743ef75",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Captured thought:\n{{ $node[\"Build Payloads\"].json.slack_ctx.normalized_text }}\n\nCaptured date (Lisbon YYYY-MM-DD):\n{{ $node[\"Build Payloads\"].json.captured_date }}\n\nUTC HHmm (computed):\n{{ $now.setZone('UTC').toFormat('HHmm') }}\n\nTimestamp ISO (computed):\n{{ $now.setZone('UTC').toISO() }}\n\nReturn ONLY valid JSON:\n\n{\n  \"md_path\": \"daily/YYYY-MM-DD-HHmm.md\",\n  \"md_filename\": \"YYYY-MM-DD-HHmm.md\",\n  \"md_append\": \"string\",\n  \"routes\": [\n    {\n      \"db\": \"entities|projects|ideas|reference\",\n      \"mode\": \"link_only|link_or_create\",\n      \"confidence\": 0.0,\n      \"dedupe_key\": \"string\",\n      \"record\": { \"title\": \"string\", \"notes\": \"string\", \"tags\": [\"string\"] }\n    }\n  ],\n  \"reason\": \"string\"\n}\n\nRules:\n- md_filename MUST be: {{ $node[\"Build Payloads\"].json.captured_date }}-{{ $now.setZone('UTC').toFormat('HHmm') }}.md\n- md_path MUST be: daily/{{ $node[\"Build Payloads\"].json.captured_date }}-{{ $now.setZone('UTC').toFormat('HHmm') }}.md\n- md_append MUST be a markdown block, EXACT:\n\n---\n- ts: {{ $now.setZone('UTC').toISO() }}\n  source: slack\n  channel: {{ $node[\"Build Payloads\"].json.slack_ctx.channel_id }}\n  user: {{ $node[\"Build Payloads\"].json.slack_ctx.captured_by_user_id }}\n  id: {{ $node[\"Build Payloads\"].json.source_event_id }}\n  text: |\n    <captured thought text>\n"
+            },
+            {
+              "role": "system",
+              "content": "You are a routing agent for a Notion-based second brain.\n\nYour job: decide whether the captured thought should be routed to Projects, Ideas, and/or Entities (People).\n\nBe conservative. Most thoughts should NOT be routed beyond Thought Log.\nPrefer linking to existing records; only create new records when the thought clearly names a specific project/idea/person.\n\nOutput ONLY valid JSON matching this schema:\n\n{\n  \"routes\": [\n    {\n      \"db\": \"entities|projects|ideas|reference\",\n      \"mode\": \"link_only|link_or_create\",\n      \"confidence\": 0.0,\n      \"dedupe_key\": \"string\",\n      \"record\": {\n        \"title\": \"string\",\n        \"notes\": \"string\",\n        \"tags\": [\"string\"]\n      }\n    }\n  ],\n  \"reason\": \"string\"\n}\n\n\nRules:\n\nIf no routing, return: {\"routes\": [], \"reason\": \"...\"}\n\nconfidence is 0.0–1.0\n\ntitle max 12 words\n\nnotes max 240 chars (include the key fact only)\n\ndedupe_key must be stable + lowercase\n\nentities: entity:<name>\n\nprojects: project:<name>\n\nideas: idea:<short-title>\n\nreference: ref:<title-or-keyword>\n\nUse \"mode\":\"link_only\" unless confidence ≥ 0.85 and the record is clearly named."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        624,
+        -256
+      ],
+      "id": "99e489b5-2176-48f3-b63a-1ed63589a75a",
+      "name": "Create MD",
+      "credentials": {
+        "openAiApi": {
+          "id": "<CRED_ID>",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "George-Twiniti",
+          "mode": "list",
+          "cachedResultName": "George-Twiniti",
+          "cachedResultUrl": "https://github.com/George-Twiniti"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "Second-Brain",
+          "mode": "list",
+          "cachedResultName": "Second-Brain",
+          "cachedResultUrl": "https://github.com/George-Twiniti/Second-Brain"
+        },
+        "filePath": "=projects/ {{ $('Create Markdown File').item.json.md_filename }}",
+        "fileContent": "={{ $('Create Markdown File').item.json.md_append }}",
+        "commitMessage": "={{ $('Build Payloads').item.json.captured_date }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        -304
+      ],
+      "id": "fe19996f-4369-4872-8f8d-f5efa54b048d",
+      "name": "Create Project File",
+      "webhookId": "<WEBHOOK_ID>",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "<CRED_ID>",
+          "name": "GitHub Personal account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "George-Twiniti",
+          "mode": "list",
+          "cachedResultName": "George-Twiniti",
+          "cachedResultUrl": "https://github.com/George-Twiniti"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "Second-Brain",
+          "mode": "list",
+          "cachedResultName": "Second-Brain",
+          "cachedResultUrl": "https://github.com/George-Twiniti/Second-Brain"
+        },
+        "filePath": "=people/ {{ $('Create Markdown File').item.json.md_filename }}",
+        "fileContent": "={{ $('Create Markdown File').item.json.md_append }}",
+        "commitMessage": "={{ $('Build Payloads').item.json.captured_date }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        -432
+      ],
+      "id": "4bb9b4e2-c0be-4148-9660-a50eaa5ec7fa",
+      "name": "Create People File",
+      "webhookId": "<WEBHOOK_ID>",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "<CRED_ID>",
+          "name": "GitHub Personal account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "George-Twiniti",
+          "mode": "list",
+          "cachedResultName": "George-Twiniti",
+          "cachedResultUrl": "https://github.com/George-Twiniti"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "Second-Brain",
+          "mode": "list",
+          "cachedResultName": "Second-Brain",
+          "cachedResultUrl": "https://github.com/George-Twiniti/Second-Brain"
+        },
+        "filePath": "=entities/{{ $json.md_filename }}",
+        "fileContent": "={{ $json.md_append }}",
+        "commitMessage": "={{ $('Build Payloads').item.json.captured_date }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        -32
+      ],
+      "id": "a7a15981-f515-44b1-9f38-0bb9deac8aec",
+      "name": "Create Entities File",
+      "webhookId": "<WEBHOOK_ID>",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "<CRED_ID>",
+          "name": "GitHub Personal account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "George-Twiniti",
+          "mode": "list",
+          "cachedResultName": "George-Twiniti",
+          "cachedResultUrl": "https://github.com/George-Twiniti"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "Second-Brain",
+          "mode": "list",
+          "cachedResultName": "Second-Brain",
+          "cachedResultUrl": "https://github.com/George-Twiniti/Second-Brain"
+        },
+        "filePath": "=ideas/ {{ $('Create Markdown File').item.json.md_filename }}",
+        "fileContent": "={{ $('Create Markdown File').item.json.md_append }}",
+        "commitMessage": "={{ $('Build Payloads').item.json.captured_date }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1456,
+        -192
+      ],
+      "id": "50cce098-90fb-49ba-ba89-369b287a0526",
+      "name": "Create Idea File",
+      "webhookId": "<WEBHOOK_ID>",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "<CRED_ID>",
+          "name": "GitHub Personal account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input = OpenAI router output\nconst r = $json;\n\n// Pull from Build Payloads\nconst bp = $node[\"Build Payloads\"].json;\n\n// UTC timestamp + HHmm suffix for filename\nconst now = new Date();\nconst iso = now.toISOString();\nconst hhmm = iso.slice(11, 13) + iso.slice(14, 16); // \"HHmm\" in UTC\nconst date = bp.captured_date; // YYYY-MM-DD (Lisbon)\n\n// Slack text/context\nconst text =\n  bp.slack_ctx?.normalized_text ||\n  bp.slack_ctx?.raw_text ||\n  \"\";\n\nconst channel = bp.slack_ctx?.channel_id || \"\";\nconst user = bp.slack_ctx?.captured_by_user_id || \"\";\nconst sourceEventId = bp.source_event_id || \"\";\n\n// Escape helper\nconst esc = (s) => (s ?? \"\").toString().replace(/\\r/g, \"\");\n\n// Build routes block\nconst routes = Array.isArray(r.routes) ? r.routes : [];\n\nconst routeLines = routes.map(x => {\n  const title = x?.record?.title || \"\";\n  const tags = Array.isArray(x?.record?.tags) ? x.record.tags.join(\", \") : \"\";\n\n  return `  - db: ${x.db}\n    title: ${esc(title)}\n    mode: ${x.mode}\n    confidence: ${Number(x.confidence || 0).toFixed(2)}\n    dedupe_key: ${x.dedupe_key}${tags ? `\\n    tags: [${tags}]` : \"\"}`;\n}).join(\"\\n\");\n\n// Markdown append block\nconst md_append =\n`---\n- ts: ${iso}\n  source: slack\n  channel: ${channel}\n  user: ${user}\n  id: ${sourceEventId}\n  text: |\n    ${esc(text).split(\"\\n\").join(\"\\n    \")}\n  routes:\n${routeLines || \"  []\"}\n  reason: ${esc(r.reason || \"\")}\n`;\n\n// File name/path (per-message file)\nconst md_filename = `${date}-${hhmm}.md`;\nconst md_path = `daily/${md_filename}`;\n\n// Return n8n item\nreturn [\n  {\n    json: {\n      md_path,\n      md_filename,\n      md_append,\n      routes: r.routes || [],\n      reason: r.reason || \"\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -272
+      ],
+      "id": "d1378ff7-d7b4-4872-a569-61cdc043733f",
+      "name": "Create Markdown File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build SD Ingest Payload": {
+      "main": [
+        [
+          {
+            "node": "POST to SignalDesk (cognition_item)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST to SignalDesk (cognition_item)": {
+      "main": [
+        [
+          {
+            "node": "Notion Update (write SD id)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Payloads": {
+      "main": [
+        [
+          {
+            "node": "Search Notion DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Notion": {
+      "main": [
+        [
+          {
+            "node": "Route to SD Decision",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create MD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Processed": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request - Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to SD Decision": {
+      "main": [
+        [
+          {
+            "node": "Route to SD Y-N",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to SD Y-N": {
+      "main": [
+        [
+          {
+            "node": "Build SD Ingest Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create People File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Project File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Idea File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Entities File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Notion DB": {
+      "main": [
+        [
+          {
+            "node": "Already Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Build Payloads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create MD": {
+      "main": [
+        [
+          {
+            "node": "Create Markdown File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create People File": {
+      "main": [
+        []
+      ]
+    },
+    "Create Project File": {
+      "main": [
+        []
+      ]
+    },
+    "Create Markdown File": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Entities File": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "956d9a0d-5ee8-448c-b8d4-81aabd941406",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "<INSTANCE_ID>"
+  },
+  "id": "<CRED_ID>",
+  "tags": [
+    {
+      "updatedAt": "2026-01-27T19:04:52.527Z",
+      "createdAt": "2026-01-27T19:04:52.527Z",
+      "id": "<CRED_ID>",
+      "name": "Second Brain"
+    }
+  ]
+}

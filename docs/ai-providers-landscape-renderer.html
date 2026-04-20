@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Providers Landscape</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { text-align: center; color: #2d3748; margin-bottom: 10px; font-size: 2.5em; }
+    .subtitle { text-align: center; color: #718096; margin-bottom: 12px; font-size: 1.1em; }
+    .updated { text-align: center; color: #4a5568; margin-bottom: 28px; font-size: 0.95em; }
+    .tier { margin-bottom: 50px; }
+    .tier-header {
+      display: flex; align-items: center; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 3px solid #e2e8f0;
+    }
+    .tier-badge {
+      padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 0.9em; margin-right: 15px;
+      text-transform: uppercase; letter-spacing: 1px; color: white;
+    }
+    .tier-1 .tier-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .tier-2 .tier-badge { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .tier-3 .tier-badge { background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); }
+    .tier-title { font-size: 1.8em; color: #2d3748; font-weight: 600; }
+    .providers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
+    .provider-card {
+      background: #f7fafc; border-radius: 15px; padding: 25px; border: 2px solid #e2e8f0;
+      transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .provider-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-color: #667eea; }
+    .provider-name { font-size: 1.5em; font-weight: bold; color: #2d3748; margin-bottom: 15px; display: flex; align-items: center; }
+    .provider-icon { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
+    .openai-color { background: #10a37f; } .anthropic-color { background: #d97706; } .google-color { background: #4285f4; }
+    .meta-color { background: #0668e1; } .mistral-color { background: #f2a900; } .xai-color { background: #000000; }
+    .cohere-color { background: #39a0ff; } .amazon-color { background: #ff9900; } .dark-color { background: #111827; }
+    .deepseek-color { background: #1d4ed8; } .qwen-color { background: #ff6a00; } .phi-color { background: #00a4ef; }
+    .hf-color { background: #ff9d00; }
+    .models-section { margin: 20px 0; }
+    .models-label { font-size: 0.85em; text-transform: uppercase; color: #718096; font-weight: 600; margin-bottom: 10px; letter-spacing: 0.5px; }
+    .model {
+      background: white; padding: 10px 15px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #667eea;
+      font-weight: 500; color: #2d3748; cursor: pointer; transition: all 0.2s ease; position: relative;
+    }
+    .model:hover { background: #f7fafc; transform: translateX(5px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .model::after { content: '👁️ Click to see details'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 0.75em; color: #718096; opacity: 0; transition: opacity 0.2s ease; }
+    .model:hover::after { opacity: 1; }
+    .company-overview { background: #f0f9ff; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 4px solid #3b82f6; }
+    .company-overview-label { font-size: 0.85em; text-transform: uppercase; color: #1e40af; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .company-overview-text { color: #1e3a8a; line-height: 1.6; font-size: 0.95em; }
+    .best-for {
+      background: #edf2f7; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; animation: slideDown 0.3s ease-out;
+    }
+    .best-for.visible { display: block; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px);} to { opacity: 1; transform: translateY(0);} }
+    .best-for-label { font-size: 0.85em; text-transform: uppercase; color: #4a5568; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .best-for-text { color: #2d3748; line-height: 1.6; font-size: 0.95em; }
+    .toggle-all-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px;
+      border-radius: 8px; font-weight: 600; cursor: pointer; margin: 20px auto; display: block; font-size: 1em;
+      transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .toggle-all-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4); }
+    .legend { background: #f7fafc; padding: 20px; border-radius: 15px; margin-top: 40px; border: 2px solid #e2e8f0; }
+    .legend-title { font-weight: 600; color: #2d3748; margin-bottom: 15px; font-size: 1.1em; }
+    .legend-content { color: #4a5568; line-height: 1.8; }
+    .note { background: #fff5f5; border-left: 4px solid #f56565; padding: 15px; margin-top: 20px; border-radius: 5px; color: #742a2a; font-size: 0.9em; }
+    .sources { margin-top: 10px; color: #6b7280; font-size: 0.85em; }
+    .sources a { color: #4f46e5; text-decoration: none; }
+    .sources a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+  <script>
+    const data = DATA_PLACEHOLDER;
+    const app = document.getElementById('app');
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function providerCard(provider) {
+      const models = provider.models.map(m => `<div class="model">${escapeHtml(m.label)}${m.note ? ` <span style="color:#6b7280;font-weight:400;">(${escapeHtml(m.note)})</span>` : ''}</div>`).join('');
+      const bestFor = provider.bestFor.map(item => `<div><strong>•</strong> ${escapeHtml(item)}</div>`).join('');
+      const sources = provider.sources?.length ? `<div class="sources">Sources: ${provider.sources.map(s => `<a href="${escapeHtml(s)}" target="_blank" rel="noreferrer">${escapeHtml(s.replace(/^https?:\/\//,''))}</a>`).join(' · ')}</div>` : '';
+      return `
+        <div class="provider-card">
+          <div class="provider-name"><span class="provider-icon ${provider.color}"></span>${escapeHtml(provider.name)}</div>
+          <div class="company-overview"><div class="company-overview-label">Company Overview</div><div class="company-overview-text">${escapeHtml(provider.overview)}</div></div>
+          <div class="models-section"><div class="models-label">Key Models (Click to see details)</div>${models}</div>
+          <div class="best-for"><div class="best-for-label">Best For</div><div class="best-for-text">${bestFor}</div></div>
+          ${sources}
+        </div>`;
+    }
+
+    app.innerHTML = `
+      <h1>🤖 ${escapeHtml(data.pageTitle)}</h1>
+      <p class="subtitle">${escapeHtml(data.subtitle)}</p>
+      <div class="updated">Last updated: ${escapeHtml(data.lastUpdated)}</div>
+      <button class="toggle-all-btn" id="toggleAll">Show All Model Details</button>
+      ${data.tiers.map(tier => `
+        <div class="tier ${tier.key}">
+          <div class="tier-header"><span class="tier-badge">${escapeHtml(tier.label)}</span><span class="tier-title">${escapeHtml(tier.title)}</span></div>
+          <div class="providers-grid">${tier.providers.map(providerCard).join('')}</div>
+        </div>
+      `).join('')}
+      <div class="legend">
+        <div class="legend-title">📊 Understanding the Tiers</div>
+        <div class="legend-content">
+          <strong>Tier 1 (Frontier):</strong> Top frontier labs pushing state-of-the-art capability across reasoning, multimodal work, and product quality.<br><br>
+          <strong>Tier 2 (Specialized & Emerging):</strong> Strong providers with focused advantages in enterprise, multilingual, ecosystem, or emerging frontier areas.<br><br>
+          <strong>Tier 3 (Open-Weight, Local & Ecosystem):</strong> Open-weight, local, or ecosystem platforms for control, privacy, cost, and experimentation.
+        </div>
+        <div class="note"><strong>Note:</strong> ${escapeHtml(data.footerNote)}</div>
+      </div>
+    `;
+
+    document.querySelectorAll('.model').forEach(model => {
+      model.addEventListener('click', function() {
+        const card = this.closest('.provider-card');
+        const bestFor = card.querySelector('.best-for');
+        bestFor.classList.toggle('visible');
+      });
+    });
+
+    let allVisible = false;
+    document.getElementById('toggleAll').addEventListener('click', () => {
+      const allBestFor = document.querySelectorAll('.best-for');
+      const btn = document.getElementById('toggleAll');
+      allVisible = !allVisible;
+      allBestFor.forEach(bf => bf.classList.toggle('visible', allVisible));
+      btn.textContent = allVisible ? 'Hide All Model Details' : 'Show All Model Details';
+    });
+  </script>
+</body>
+</html>

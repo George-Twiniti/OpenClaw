@@ -1,0 +1,233 @@
+{
+  "pageTitle": "AI Providers Landscape",
+  "subtitle": "A current overview of leading AI model providers and their specialties",
+  "lastUpdated": "2026-04-14",
+  "tiers": [
+    {
+      "key": "tier-1",
+      "label": "Tier 1",
+      "title": "Frontier Model Providers",
+      "providers": [
+        {
+          "name": "OpenAI",
+          "color": "openai-color",
+          "overview": "OpenAI leads in general-purpose AI, multimodal interfaces, coding, and reasoning. Strong product ecosystem and broad developer adoption.",
+          "models": [
+            {"label": "GPT-4.1", "note": "general-purpose flagship in the API"},
+            {"label": "GPT-4o / 4o mini", "note": "multimodal and efficient variants"},
+            {"label": "o-series reasoning models", "note": "advanced reasoning, math, and code"}
+          ],
+          "bestFor": [
+            "Multimodal apps, vision, audio, and real-time interaction",
+            "High-volume cost-sensitive general workloads",
+            "Complex reasoning, coding, and research tasks"
+          ],
+          "sources": ["https://openai.com/index/gpt-4-1/", "https://developers.openai.com/api/docs/models/all"]
+        },
+        {
+          "name": "Anthropic",
+          "color": "anthropic-color",
+          "overview": "Anthropic focuses on reliable instruction-following, long context, and strong writing/reasoning quality, with a safety-oriented product philosophy.",
+          "models": [
+            {"label": "Claude 4.5 Opus", "note": "most capable"},
+            {"label": "Claude 4.5 Sonnet", "note": "balanced flagship"},
+            {"label": "Claude 4.5 Haiku", "note": "fast and efficient"}
+          ],
+          "bestFor": [
+            "Long documents and nuanced analysis",
+            "Balanced everyday coding and writing",
+            "Fast, high-throughput assistants"
+          ],
+          "sources": ["https://www.anthropic.com/news"]
+        },
+        {
+          "name": "Google DeepMind",
+          "color": "google-color",
+          "overview": "Google’s Gemini family is strong in multimodal work, large context, and tight integration with Google’s ecosystem.",
+          "models": [
+            {"label": "Gemini 2.5 Pro", "note": "current flagship reasoning model"},
+            {"label": "Gemini 2.5 Flash", "note": "fast general-purpose model"},
+            {"label": "Gemini 1.5 Flash / Pro", "note": "still relevant for long-context workflows"}
+          ],
+          "bestFor": [
+            "Multimodal reasoning and structured analysis",
+            "Large-document workflows and search-heavy tasks",
+            "Google ecosystem integrations"
+          ],
+          "sources": ["https://blog.google/innovation-and-ai/", "https://blog.google/products/gemini/"]
+        }
+      ]
+    },
+    {
+      "key": "tier-2",
+      "label": "Tier 2",
+      "title": "Specialized & Emerging Providers",
+      "providers": [
+        {
+          "name": "Meta AI",
+          "color": "meta-color",
+          "overview": "Meta’s Llama family remains the most visible open-weight ecosystem for broad deployment and fine-tuning.",
+          "models": [
+            {"label": "Llama 3.3 / 3.1", "note": "core open-weight family"},
+            {"label": "Llama multimodal variants", "note": "vision-capable options"}
+          ],
+          "bestFor": [
+            "Self-hosted and fine-tuned deployments",
+            "Open-weight experimentation",
+            "Cost-controlled scaling"
+          ],
+          "sources": ["https://ai.meta.com/llama/"]
+        },
+        {
+          "name": "Mistral AI",
+          "color": "mistral-color",
+          "overview": "Mistral focuses on efficient, high-quality models with strong European positioning and multilingual strength.",
+          "models": [
+            {"label": "Mistral Large", "note": "flagship"},
+            {"label": "Mistral Small", "note": "fast and economical"},
+            {"label": "Codestral", "note": "coding-focused"}
+          ],
+          "bestFor": [
+            "Multilingual European workflows",
+            "Coding and code assistance",
+            "Efficient deployment"
+          ],
+          "sources": ["https://mistral.ai/news/"]
+        },
+        {
+          "name": "xAI",
+          "color": "xai-color",
+          "overview": "xAI’s Grok models are positioned around current-awareness, conversational access, and social-data proximity.",
+          "models": [
+            {"label": "Grok", "note": "flagship conversational model"},
+            {"label": "Grok mini", "note": "lighter and cheaper"}
+          ],
+          "bestFor": [
+            "Current events and social context",
+            "Conversational product experiences",
+            "Rapid iteration on model capability"
+          ],
+          "sources": ["https://x.ai/blog"]
+        },
+        {
+          "name": "Cohere",
+          "color": "cohere-color",
+          "overview": "Cohere remains strong in enterprise search, grounding, and RAG-oriented workflows.",
+          "models": [
+            {"label": "Command R+", "note": "flagship retrieval and agent model"},
+            {"label": "Command R", "note": "efficient enterprise model"},
+            {"label": "Embed v3", "note": "embeddings and search"}
+          ],
+          "bestFor": [
+            "Enterprise retrieval and grounding",
+            "Search-heavy workflows",
+            "Embeddings and classification"
+          ],
+          "sources": ["https://cohere.com/blog"]
+        },
+        {
+          "name": "Amazon Bedrock",
+          "color": "amazon-color",
+          "overview": "Bedrock is the AWS model platform, combining Amazon’s own models with access to external providers under one deployment surface.",
+          "models": [
+            {"label": "Amazon Nova", "note": "Pro / Lite / Micro family"},
+            {"label": "Amazon Titan", "note": "embeddings and text models"}
+          ],
+          "bestFor": [
+            "AWS-native production systems",
+            "Managed enterprise deployments",
+            "Multi-provider model access"
+          ],
+          "sources": ["https://aws.amazon.com/bedrock/"]
+        }
+      ]
+    },
+    {
+      "key": "tier-3",
+      "label": "Tier 3",
+      "title": "Open-Weight, Local & Ecosystem Providers",
+      "providers": [
+        {
+          "name": "Ollama",
+          "color": "dark-color",
+          "overview": "Ollama is the easiest local-model runtime for privacy-first development and offline experimentation.",
+          "models": [
+            {"label": "Platform runtime", "note": "runs many open-weight models locally"},
+            {"label": "Llama / Mistral / Qwen / DeepSeek", "note": "common families available through the runtime"}
+          ],
+          "bestFor": [
+            "Local prototyping",
+            "Private or offline use",
+            "Low-cost model switching"
+          ],
+          "sources": ["https://ollama.com/"]
+        },
+        {
+          "name": "DeepSeek",
+          "color": "deepseek-color",
+          "overview": "DeepSeek is a strong open-weight contender, especially for reasoning and coding workflows.",
+          "models": [
+            {"label": "DeepSeek-V3", "note": "general model family"},
+            {"label": "DeepSeek-R1", "note": "reasoning-focused"},
+            {"label": "DeepSeek-Coder", "note": "coding-focused"}
+          ],
+          "bestFor": [
+            "Reasoning and structured problem-solving",
+            "Code generation and code review",
+            "Open-weight experimentation"
+          ],
+          "sources": ["https://www.deepseek.com/"]
+        },
+        {
+          "name": "Alibaba Qwen",
+          "color": "qwen-color",
+          "overview": "Qwen is one of the most competitive open-weight families, with strong bilingual and coding performance.",
+          "models": [
+            {"label": "Qwen2.5", "note": "general family"},
+            {"label": "Qwen2.5-Coder", "note": "coding"},
+            {"label": "Qwen2.5-VL", "note": "vision-language"}
+          ],
+          "bestFor": [
+            "Chinese-English bilingual tasks",
+            "Coding assistance",
+            "Vision-language workflows"
+          ],
+          "sources": ["https://qwenlm.github.io/"]
+        },
+        {
+          "name": "Microsoft Phi",
+          "color": "phi-color",
+          "overview": "Phi models are optimized small models that perform well relative to size, especially on STEM and edge use cases.",
+          "models": [
+            {"label": "Phi-4", "note": "current small-model flagship"},
+            {"label": "Phi-3.5", "note": "compact family"},
+            {"label": "Phi-vision variants", "note": "multimodal small models"}
+          ],
+          "bestFor": [
+            "Resource-constrained deployment",
+            "STEM-heavy tasks",
+            "Edge and local inference"
+          ],
+          "sources": ["https://azure.microsoft.com/en-us/products/phi/", "https://www.microsoft.com/en-us/research/"]
+        },
+        {
+          "name": "Hugging Face",
+          "color": "hf-color",
+          "overview": "Hugging Face is the central ecosystem for open models, tooling, and model discovery.",
+          "models": [
+            {"label": "Model Hub", "note": "catalog and distribution layer"},
+            {"label": "Transformers ecosystem", "note": "core library and tooling"}
+          ],
+          "bestFor": [
+            "Model discovery and experimentation",
+            "Hosting open-weight models",
+            "Community-driven workflows"
+          ],
+          "sources": ["https://huggingface.co/"]
+        }
+      ]
+    }
+  ],
+  "footerNote": "This landscape changes quickly. Use official provider announcements and docs for the latest model availability.",
+  "sourcePolicy": "Official docs and product announcements are the primary source of truth."
+}

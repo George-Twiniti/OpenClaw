@@ -1,0 +1,35 @@
+name: Daily Agent
+
+on:
+  schedule:
+    - cron: "10 0 * * *"   # 00:10 UTC ~= 00:10 Lisbon (adjust for DST)
+  workflow_dispatch:
+
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        working-directory: scripts
+        run: npm ci
+
+      - name: Run daily agent
+        working-directory: scripts
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node daily-agent.js --repo .. --commit
+
+      - name: Push changes
+        run: |
+          git config user.name "daily-agent"
+          git config user.email "daily-agent@users.noreply.github.com"
+          git push
