@@ -1,0 +1,25 @@
+Startup brief at 2026-04-21T08:40:15.809727+00:00
+
+Action-required / notable mail:
+- georgebroadbent67@gmail.com: AT&T Account Management <update@emaildl.att-mail.com> — Your AT&T online bill is ready to be viewed
+- georgebroadbent67@gmail.com: Google Calendar <calendar-notification@google.com> — You have no events scheduled today.
+- georgebroadbent67@gmail.com: Google Scholar Alerts <scholaralerts-noreply@google.com> — Burcu Akinci - new citations
+- georgebroadbent67@gmail.com: myPennMedicineInfo@uphs.upenn.edu — New Message in myPennMedicine
+- georgebroadbent67@gmail.com: Allison Taylor <ally.taylor@devrank.co> — LinkedIn Contact from Allison Taylor at DevRank to George
+- xbr350@gmail.com: none
+
+Exchange:
+- unread: 10
+  - data-studio-noreply@google.com — Twiniti Search Console Report - Apr 21, 2026
+  - follow-suggestions@mail.instagram.com — twiniti.ai, see doggie.pt, neildegrassetyson and more in your feed
+  - security@vercel.com — Vercel Security Update
+  - stories-recap@mail.instagram.com — adelalopera and nasa recently added to their stories
+  - rahim.essahli@icloud.com — Re: iCloud account 
+- events next 24h: 3
+  - 2026-04-21T11:15:00.0000000 — Development time
+  - 2026-04-22T00:00:00.0000000 — Administrative Professionals Day
+  - 2026-04-22T00:00:00.0000000 — Administrative Professionals Day
+
+Gmail calendars:
+- gmail1: 0 upcoming
+- gmail2: 0 upcoming

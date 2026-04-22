@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Providers Landscape</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .tier {
+            margin-bottom: 50px;
+        }
+        
+        .tier-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+        
+        .tier-badge {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tier-1 .tier-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tier-2 .tier-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .tier-title {
+            font-size: 1.8em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .provider-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .provider-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        
+        .provider-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .provider-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .openai-color { background: #10a37f; }
+        .anthropic-color { background: #d97706; }
+        .google-color { background: #4285f4; }
+        .meta-color { background: #0668e1; }
+        .mistral-color { background: #f2a900; }
+        .xai-color { background: #000000; }
+        .cohere-color { background: #39a0ff; }
+        .amazon-color { background: #ff9900; }
+        
+        .models-section {
+            margin: 20px 0;
+        }
+        
+        .models-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: #718096;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .model {
+            background: white;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-weight: 500;
+            color: #2d3748;
+        }
+        
+        .company-overview {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .company-overview-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .company-overview-text {
+            color: #1e3a8a;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        .best-for {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .best-for.visible {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .best-for-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .best-for-text {
+            color: #2d3748;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        .model {
+            background: white;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-weight: 500;
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .model:hover {
+            background: #f7fafc;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .model::after {
+            content: '👁️ Click to see details';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75em;
+            color: #718096;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .model:hover::after {
+            opacity: 1;
+        }
+        
+        .toggle-all-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .toggle-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        .legend {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .legend-content {
+            color: #4a5568;
+            line-height: 1.8;
+        }
+        
+        .note {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            color: #742a2a;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Providers Landscape</h1>
+        <p class="subtitle">A comprehensive overview of leading AI model providers and their specialties</p>
+        
+        <button class="toggle-all-btn" onclick="toggleAll()">Show All Model Details</button>
+        
+        <!-- TIER 1: FRONTIER MODELS -->
+        <div class="tier tier-1">
+            <div class="tier-header">
+                <span class="tier-badge">Tier 1</span>
+                <span class="tier-title">Frontier Model Providers</span>
+            </div>
+            
+            <div class="providers-grid">
+                <!-- OpenAI -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon openai-color"></span>
+                        OpenAI
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            OpenAI is the creator of ChatGPT and pioneering force in accessible AI. Founded in 2015, they've led the generative AI revolution with GPT models. Known for rapid innovation, strong API ecosystem, and democratizing access to powerful AI capabilities.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">GPT-4o (multimodal flagship)</div>
+                        <div class="model">GPT-4o mini (efficient)</div>
+                        <div class="model">o1 & o1 mini (reasoning)</div>
+                        <div class="model">o3 (advanced reasoning)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>GPT-4o:</strong> Multimodal tasks, vision, audio, real-time applications<br>
+                            <strong>GPT-4o mini:</strong> Cost-effective general tasks, high-volume applications<br>
+                            <strong>o1/o1 mini:</strong> Complex reasoning, math, science, coding challenges<br>
+                            <strong>o3:</strong> Advanced multi-step reasoning, research-level problems<br>
+                            Industry leader in general-purpose AI and developer adoption.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Anthropic -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon anthropic-color"></span>
+                        Anthropic
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Anthropic is an AI safety company focused on building reliable, interpretable, and steerable AI systems. Founded in 2021 by former OpenAI researchers, they created Claude with emphasis on constitutional AI and harmlessness. Known for long context windows and nuanced instruction following.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Claude Opus 4.5 (most capable)</div>
+                        <div class="model">Claude Sonnet 4.5 (balanced)</div>
+                        <div class="model">Claude Haiku 4.5 (fast)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Opus 4.5:</strong> Complex analysis, research, long documents (200K+ tokens)<br>
+                            <strong>Sonnet 4.5:</strong> Balanced performance for everyday tasks, coding, writing<br>
+                            <strong>Haiku 4.5:</strong> Fast responses, high-throughput applications<br>
+                            All models excel at nuanced instruction following, safety, and extended context understanding.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Google -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon google-color"></span>
+                        Google DeepMind
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Google DeepMind combines Google Brain and DeepMind's AI expertise. Creators of AlphaGo and Gemini, they lead in multimodal AI and scientific breakthroughs. Known for massive context windows (up to 2M tokens), deep Google ecosystem integration, and cutting-edge research.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Gemini 2.0 Flash (latest)</div>
+                        <div class="model">Gemini 1.5 Pro (capable)</div>
+                        <div class="model">Gemini 1.5 Flash (efficient)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>2.0 Flash:</strong> Latest capabilities, multimodal, fast inference<br>
+                            <strong>1.5 Pro:</strong> Massive context (2M tokens), long document analysis<br>
+                            <strong>1.5 Flash:</strong> Cost-effective multimodal tasks, quick responses<br>
+                            Strong integration with Google services, search, and scientific reasoning.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TIER 2: SPECIALIZED & EMERGING -->
+        <div class="tier tier-2">
+            <div class="tier-header">
+                <span class="tier-badge">Tier 2</span>
+                <span class="tier-title">Specialized & Emerging Providers</span>
+            </div>
+            
+            <div class="providers-grid">
+                <!-- Meta -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon meta-color"></span>
+                        Meta AI
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Meta (Facebook) is a leader in open-source AI with their Llama model family. They prioritize accessibility and transparency, releasing powerful models under permissive licenses. Strong community adoption, extensive research publications, and commitment to democratizing AI technology.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Llama 3.1 (405B, 70B, 8B)</div>
+                        <div class="model">Llama 3.2 (multimodal)</div>
+                        <div class="model">Llama 3.3 (70B)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>405B:</strong> Complex reasoning, research tasks<br>
+                            <strong>70B/3.3:</strong> Balanced performance at lower cost<br>
+                            <strong>8B:</strong> Edge deployment, mobile devices<br>
+                            <strong>3.2:</strong> Vision tasks, image understanding<br>
+                            All models excellent for on-premise deployment and fine-tuning.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mistral -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon mistral-color"></span>
+                        Mistral AI
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Mistral AI is a French startup focused on efficient, open-weight models with European data sovereignty. Founded by former DeepMind and Meta researchers, they excel at creating highly efficient models with strong multilingual support, particularly in European languages.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Mistral Large 2 (flagship)</div>
+                        <div class="model">Mistral Small (efficient)</div>
+                        <div class="model">Codestral (coding)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Large 2:</strong> Complex multilingual tasks, European languages<br>
+                            <strong>Small:</strong> Cost-effective general tasks, fast inference<br>
+                            <strong>Codestral:</strong> Code generation, completion, debugging<br>
+                            Strong focus on European data sovereignty and efficient deployment.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- xAI -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon xai-color"></span>
+                        xAI (X.ai)
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            xAI is Elon Musk's AI company focused on "understanding the universe." Grok models integrate real-time X/Twitter data and emphasize truthfulness with minimal content filtering. Rapidly emerging competitor with unique social media data access and conversational capabilities.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Grok 2</div>
+                        <div class="model">Grok 2 mini</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Grok 2:</strong> Real-time X/Twitter data access, current events<br>
+                            <strong>Grok 2 mini:</strong> Faster inference with similar capabilities<br>
+                            Both models excel at conversational AI with less content filtering and direct access to real-time social media context.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cohere -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon cohere-color"></span>
+                        Cohere
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Cohere specializes in enterprise AI with focus on retrieval-augmented generation (RAG) and search. Founded by former Google Brain researchers, they provide production-grade NLP tools optimized for business applications, with strong emphasis on grounded generation and factuality.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Command R+ (flagship)</div>
+                        <div class="model">Command R (efficient)</div>
+                        <div class="model">Embed v3 (embeddings)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Command R+:</strong> RAG applications, multi-step tool use, grounded generation<br>
+                            <strong>Command R:</strong> Cost-effective RAG, enterprise search<br>
+                            <strong>Embed v3:</strong> Semantic search, clustering, classification<br>
+                            Optimized for retrieval-augmented workflows and enterprise needs.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Amazon -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon amazon-color"></span>
+                        Amazon (Bedrock)
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Amazon Bedrock is AWS's fully managed AI service providing access to foundation models from multiple providers plus Amazon's own Nova and Titan models. Offers seamless AWS integration, serverless architecture, and unified API for various model providers.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Amazon Nova (Pro, Lite, Micro)</div>
+                        <div class="model">Amazon Titan</div>
+                        <div class="model">+ Third-party access</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Nova Pro:</strong> Multimodal understanding, document analysis<br>
+                            <strong>Nova Lite/Micro:</strong> Cost-effective text tasks<br>
+                            <strong>Titan:</strong> Text generation, embeddings, fine-tuning<br>
+                            Unified AWS integration with access to multiple model providers.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TIER 3: OPEN-SOURCE ECOSYSTEM -->
+        <div class="tier tier-2">
+            <div class="tier-header">
+                <span class="tier-badge" style="background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);">Tier 3</span>
+                <span class="tier-title">Open-Source & Local Deployment</span>
+            </div>
+            
+            <div class="providers-grid">
+                <!-- Ollama -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon" style="background: #000000;"></span>
+                        Ollama
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Ollama is an open-source platform for running large language models locally on Mac, Linux, and Windows. It simplifies model deployment with a Docker-like experience, making it easy to download, run, and switch between models without cloud dependencies. Perfect for privacy-focused development.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Platform (runs many models) - Click to see details</div>
+                        <div class="model">Llama 3.1/3.2 (all sizes)</div>
+                        <div class="model">Mistral models</div>
+                        <div class="model">Qwen, DeepSeek, Phi-3</div>
+                        <div class="model">+ Many community models</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            Local deployment on Mac, Linux, Windows. Privacy-focused applications, offline operation, no API costs. Easy model management and switching. Ideal for developers wanting full control and data privacy without internet dependency.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DeepSeek (China) -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon" style="background: #1e40af;"></span>
+                        DeepSeek AI
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            DeepSeek AI is a Chinese AI company focused on open-source, efficient models using Mixture-of-Experts (MoE) architecture. Known for competitive performance with frontier models at lower computational cost. Strong in coding and reasoning tasks with innovative architectural approaches.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">DeepSeek-V3 (671B MoE)</div>
+                        <div class="model">DeepSeek-Coder-V2</div>
+                        <div class="model">DeepSeek-R1 (reasoning)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>V3:</strong> Highly efficient MoE architecture, competitive with frontier models<br>
+                            <strong>Coder-V2:</strong> Code generation, multi-language programming<br>
+                            <strong>R1:</strong> Multi-step reasoning, mathematical problem solving<br>
+                            Chinese language excellence, open-source innovation from China.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Alibaba Qwen -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon" style="background: #ff6a00;"></span>
+                        Alibaba Qwen
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Qwen (通义千问) is Alibaba Cloud's family of large language models released under Apache 2.0 license. Known for exceptional Chinese-English bilingual performance, wide range of model sizes, and strong coding capabilities. One of China's most successful open-source AI initiatives.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Qwen2.5 (0.5B-72B)</div>
+                        <div class="model">Qwen2.5-Coder</div>
+                        <div class="model">Qwen2-VL (multimodal)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Qwen2.5:</strong> Strong multilingual (especially Chinese), wide size range<br>
+                            <strong>Coder:</strong> Programming across 92 languages, competitive with specialized models<br>
+                            <strong>VL:</strong> Vision-language tasks, image understanding<br>
+                            Excellent Chinese-English bilingual performance, Apache 2.0 license.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Microsoft Phi -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon" style="background: #00a4ef;"></span>
+                        Microsoft Phi
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Microsoft Phi models demonstrate that "small language models" can achieve impressive performance through high-quality training data. Focus on efficiency, STEM reasoning, and deployment on resource-constrained devices. Part of Microsoft's open-source AI initiative.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Phi-4 (14B)</div>
+                        <div class="model">Phi-3.5 (3.8B, 7B)</div>
+                        <div class="model">Phi-3.5-Vision</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Phi-4:</strong> STEM reasoning, mathematics, competitive with larger models<br>
+                            <strong>Phi-3.5:</strong> Small footprint, mobile/edge deployment<br>
+                            <strong>Vision:</strong> Multimodal tasks with efficient inference<br>
+                            Exceptional performance-to-size ratio for resource-constrained environments.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other Chinese Models -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon" style="background: #dc2626;"></span>
+                        Other Chinese Models
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            China's AI ecosystem includes multiple open-source model families from tech giants and startups. Baichuan (Baichuan Intelligence), ChatGLM (Tsinghua/Zhipu AI), and Yi (01.AI/Kai-Fu Lee) all contribute diverse, competitive models with strong Chinese language support.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Key Models (Click to see details)</div>
+                        <div class="model">Baichuan (7B, 13B)</div>
+                        <div class="model">ChatGLM (6B, 130B)</div>
+                        <div class="model">Yi (6B, 34B) by 01.AI</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            <strong>Baichuan:</strong> Chinese language tasks, enterprise deployment in China<br>
+                            <strong>ChatGLM:</strong> Bilingual dialogue, efficient training from Tsinghua<br>
+                            <strong>Yi:</strong> Strong bilingual performance, various sizes for different needs<br>
+                            All focus on Chinese market with strong open-source communities.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hugging Face -->
+                <div class="provider-card">
+                    <div class="provider-name">
+                        <span class="provider-icon" style="background: #ff9d00;"></span>
+                        Hugging Face
+                    </div>
+                    <div class="company-overview">
+                        <div class="company-overview-label">Company Overview</div>
+                        <div class="company-overview-text">
+                            Hugging Face is the GitHub of machine learning, hosting over 500,000 models and datasets. Provides the Transformers library, model hosting infrastructure, and collaboration tools. The central hub for the open-source AI community with focus on democratizing AI development.
+                        </div>
+                    </div>
+                    <div class="models-section">
+                        <div class="models-label">Platform & Models (Click to see details)</div>
+                        <div class="model">Model Hub (500K+ models)</div>
+                        <div class="model">BLOOM (multilingual)</div>
+                        <div class="model">StarCoder (coding)</div>
+                    </div>
+                    <div class="best-for">
+                        <div class="best-for-label">Best For</div>
+                        <div class="best-for-text">
+                            Central hub for discovering, sharing, and deploying open-source models. Provides infrastructure for model hosting, fine-tuning, and inference. Strong community, extensive documentation, and tools like Transformers library. Essential for ML practitioners and researchers.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-title">📊 Understanding the Tiers</div>
+            <div class="legend-content">
+                <strong>Tier 1 (Frontier):</strong> These providers consistently push the boundaries of AI capabilities, competing for state-of-the-art performance on benchmarks. They invest heavily in research, training infrastructure, and safety. Their models typically offer the most advanced reasoning, understanding, and generation capabilities across multiple modalities.
+                <br><br>
+                <strong>Tier 2 (Specialized & Emerging):</strong> These providers either focus on specific use cases (enterprise, regional needs, specialized tasks) or are rapidly emerging competitors. They offer strong value propositions through specialization, cost-efficiency, unique features, or ecosystem integration. Many provide both API access and open-source options.
+                <br><br>
+                <strong>Tier 3 (Open-Source & Local):</strong> These models and platforms prioritize privacy, local deployment, customization, and zero API costs. They enable full control over infrastructure, data, and model behavior. Essential for privacy-sensitive applications, offline operation, fine-tuning, and research. Strong focus on community development and accessibility.
+            </div>
+            <div class="note">
+                <strong>Note:</strong> This landscape evolves rapidly. Model capabilities and positioning can change with new releases. Chinese models (DeepSeek, Qwen) are increasingly competitive with frontier models. As of February 2026, the open-source ecosystem continues to close the gap with proprietary offerings.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle individual model details
+        document.querySelectorAll('.model').forEach(model => {
+            model.addEventListener('click', function() {
+                const card = this.closest('.provider-card');
+                const bestFor = card.querySelector('.best-for');
+                bestFor.classList.toggle('visible');
+            });
+        });
+        
+        // Toggle all model details at once
+        let allVisible = false;
+        function toggleAll() {
+            const allBestFor = document.querySelectorAll('.best-for');
+            const btn = document.querySelector('.toggle-all-btn');
+            
+            if (allVisible) {
+                allBestFor.forEach(bf => bf.classList.remove('visible'));
+                btn.textContent = 'Show All Model Details';
+                allVisible = false;
+            } else {
+                allBestFor.forEach(bf => bf.classList.add('visible'));
+                btn.textContent = 'Hide All Model Details';
+                allVisible = true;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-22T11:58:45.163Z",
+  "entries": {
+    "memory:memory/2026-03-16.md:1:11": {
+      "key": "memory:memory/2026-03-16.md:1:11",
+      "path": "memory/2026-03-16.md",
+      "startLine": 1,
+      "endLine": 11,
+      "source": "memory",
+      "snippet": "# 2026-03-16 - MG wants daily Gmail email + attachment scans wired into the startup summary. - Daily startup brief now runs `bills_scan.py` (attachments scan) + `startup_brief.py` at 08:00 Europe/Lisbon. - Friday 09:00 Europe/Lisbon weekly bills scan already in place (SIMAR water, EDP electric, Vodafone) via `bills_scan.py` and applies to both Gmail accounts. - Gmail IMAP access is now via custom IMAP scripts using local env files; app passwords must be stored locally (not in chat). - Issue: IMAP auth failures were debugged; both accounts tested; need Gmail-side resolution when failures reappear. - Agreement: persist an “ops recap” after each session and maintain an “automation agreements”",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3517774522304535,
+      "maxScore": 0.3517774522304535,
+      "firstRecalledAt": "2026-04-19T13:32:06.611Z",
+      "lastRecalledAt": "2026-04-19T13:32:06.611Z",
+      "queryHashes": [
+        "99f8b1ce25ef"
+      ],
+      "recallDays": [
+        "2026-04-19"
+      ],
+      "conceptTags": [
+        "bills-scan.py",
+        "startup-brief.py",
+        "europe/lisbon",
+        "gmail-side",
+        "wants",
+        "gmail",
+        "email",
+        "attachment"
+      ]
+    },
+    "memory:memory/2026-04-17.md:1:3": {
+      "key": "memory:memory/2026-04-17.md:1:3",
+      "path": "memory/2026-04-17.md",
+      "startLine": 1,
+      "endLine": 3,
+      "source": "memory",
+      "snippet": "- Telegram video processing was tightened again: the reply should be summary-only and must not include metadata analysis, policy commentary, or timestamp discussion. - Open loop: the Oracle-side Telegram interface/router likely still has its own prompt that is overriding the skill, so inspect and patch the router prompt/config next.",
+      "recallCount": 5,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 2.1733659565448757,
+      "maxScore": 0.4930062770843506,
+      "firstRecalledAt": "2026-04-21T10:46:47.901Z",
+      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "queryHashes": [
+        "b94e712c4325",
+        "253394e76e84",
+        "6c6145b03f4e",
+        "54d094803fc3",
+        "cdb4e4c7ce3d"
+      ],
+      "recallDays": [
+        "2026-04-21",
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "router",
+        "summary-only",
+        "oracle-side",
+        "interface/router",
+        "prompt/config",
+        "telegram",
+        "video",
+        "processing"
+      ]
+    },
+    "memory:memory/2026-04-16.md:1:5": {
+      "key": "memory:memory/2026-04-16.md:1:5",
+      "path": "memory/2026-04-16.md",
+      "startLine": 1,
+      "endLine": 5,
+      "source": "memory",
+      "snippet": "- Session closeout: Oracle Telegram export was tightened to mirror canonical Second-Brain video paths under `/home/ubuntu/.openclaw/workspace/second-brain/conv/video/...` and `/home/ubuntu/.openclaw/workspace/second-brain/summaries/video/...`. - `skills/telegram-video-processing/SKILL.md` was updated to trigger more reliably on Telegram messages containing YouTube links, ignore sender metadata/timestamps, and avoid follow-up questions before processing. - Open loop: verify the Oracle job is actually writing its outputs into the canonical Second-Brain paths so the export script can pick them up cleanly. - Next step tomorrow: inspect Oracle output location and patch the Oracle-side writer if i",
+      "recallCount": 3,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 1.1601224929094314,
+      "maxScore": 0.42149471044540404,
+      "firstRecalledAt": "2026-04-21T10:46:47.901Z",
+      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "queryHashes": [
+        "b94e712c4325",
+        "54d094803fc3",
+        "cdb4e4c7ce3d"
+      ],
+      "recallDays": [
+        "2026-04-21",
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "second-brain",
+        "home/ubuntu",
+        "metadata/timestamps",
+        "follow-up",
+        "oracle-side",
+        "closeout",
+        "oracle",
+        "telegram"
+      ]
+    },
+    "memory:memory/2026-04-21.md:1:5": {
+      "key": "memory:memory/2026-04-21.md:1:5",
+      "path": "memory/2026-04-21.md",
+      "startLine": 1,
+      "endLine": 5,
+      "source": "memory",
+      "snippet": "# 2026-04-21 - Started the daily brief at 09:35 BST. - Recent open loop to carry forward: Oracle-side Telegram router still likely needs patching so YouTube/video messages consistently go to `telegram-video-processing`. - Yesterday’s work to remember: Telegram video processing was tightened to be summary-only, ignore metadata/timestamps, and the Oracle export paths were aligned toward the canonical Second-Brain video directories.",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.8092982292175293,
+      "maxScore": 0.41165236234664915,
+      "firstRecalledAt": "2026-04-22T11:37:31.975Z",
+      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "queryHashes": [
+        "54d094803fc3",
+        "cdb4e4c7ce3d"
+      ],
+      "recallDays": [
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "router",
+        "oracle-side",
+        "youtube/video",
+        "telegram-video-processing",
+        "summary-only",
+        "metadata/timestamps",
+        "second-brain",
+        "started"
+      ]
+    },
+    "memory:memory/2026-04-08.md:1:10": {
+      "key": "memory:memory/2026-04-08.md:1:10",
+      "path": "memory/2026-04-08.md",
+      "startLine": 1,
+      "endLine": 10,
+      "source": "memory",
+      "snippet": "# 2026-04-08 - Fixed the Oracle server’s swap situation by creating and enabling an 8 GiB `/swapfile`. - Confirmed the Oracle server should be kept as an orchestration / worker host, not as the primary fast interactive inference box. - Verified Ollama on Oracle is using `qwen3:4b` locally; `qwen3.5:cloud` is a remote tag placeholder. - Measured local Ollama latency on Oracle at roughly 57 seconds for a trivial prompt, which is too slow for interactive chat but acceptable for batch/background work. - Confirmed Telegram integration is already present on Oracle and that the host is appropriate for Telegram video processing. - Confirmed the Second Brain workflow exists and includes daily summar",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.733587634563446,
+      "maxScore": 0.38110785484313964,
+      "firstRecalledAt": "2026-04-22T11:37:31.975Z",
+      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "queryHashes": [
+        "54d094803fc3",
+        "cdb4e4c7ce3d"
+      ],
+      "recallDays": [
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "qwen3.5",
+        "batch/background",
+        "fixed",
+        "the",
+        "oracle",
+        "server’s",
+        "swap",
+        "situation"
+      ]
+    },
+    "memory:memory/2026-04-22.md:1:5": {
+      "key": "memory:memory/2026-04-22.md:1:5",
+      "path": "memory/2026-04-22.md",
+      "startLine": 1,
+      "endLine": 5,
+      "source": "memory",
+      "snippet": "# 2026-04-22 - Morning startup brief: open loop remains the Oracle-side Telegram/router runtime layer that still leaks `skill_update` wrappers into Telegram replies. - Also still open: verify end-to-end YouTube/video processing writes transcripts/summaries to the canonical Second-Brain paths. - Missing file note: `second-brain/references/daily-wrapup-spec.md` was not found.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.4609729170799255,
+      "maxScore": 0.4609729170799255,
+      "firstRecalledAt": "2026-04-22T11:58:45.163Z",
+      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "queryHashes": [
+        "cdb4e4c7ce3d"
+      ],
+      "recallDays": [
+        "2026-04-22"
+      ],
+      "conceptTags": [
+        "router",
+        "oracle-side",
+        "telegram/router",
+        "skill-update",
+        "end-to-end",
+        "youtube/video",
+        "transcripts/summaries",
+        "second-brain"
+      ]
+    }
+  }
+}

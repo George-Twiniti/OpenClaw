@@ -1,7 +1,5 @@
 # TOOLS.md - Local Notes
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
-
 ## What Goes Here
 
 Things like:
@@ -46,6 +44,10 @@ Things like:
 - Public export copied to `github-second-brain.pub`
 - SSH host alias: `github.com-second-brain`
 - Keep these repo-specific keys labeled separately to avoid mixing deploy/access credentials between repos
+
+### Oracle SSH
+
+- `oracle-web` → Oracle Ubuntu server for web + Telegram work, SSH host alias should point to the current server, not the old `129.159.181.219` host
 
 ## Why Separate?
 

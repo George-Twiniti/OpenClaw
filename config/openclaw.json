@@ -117,6 +117,14 @@
         "1408214287"
       ],
       "groupPolicy": "allowlist",
+      "groups": {
+        "*": {
+          "groupPolicy": "allowlist",
+          "requireMention": false,
+          "skills": ["telegram-video-processing"],
+          "systemPrompt": "When a Telegram message contains a YouTube URL or youtu.be link, treat the link as the task anchor. Run transcript extraction first, save transcript and creator-ready summary into Second-Brain, and reply in Telegram with a short English summary only. Do not mention sender metadata, timestamps, or routing details."
+        }
+      },
       "streaming": "partial"
     }
   },
