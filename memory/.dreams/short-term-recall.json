@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-22T11:58:45.163Z",
+  "updatedAt": "2026-04-23T09:01:59.576Z",
   "entries": {
     "memory:memory/2026-03-16.md:1:11": {
       "key": "memory:memory/2026-03-16.md:1:11",
@@ -9,18 +9,20 @@
       "endLine": 11,
       "source": "memory",
       "snippet": "# 2026-03-16 - MG wants daily Gmail email + attachment scans wired into the startup summary. - Daily startup brief now runs `bills_scan.py` (attachments scan) + `startup_brief.py` at 08:00 Europe/Lisbon. - Friday 09:00 Europe/Lisbon weekly bills scan already in place (SIMAR water, EDP electric, Vodafone) via `bills_scan.py` and applies to both Gmail accounts. - Gmail IMAP access is now via custom IMAP scripts using local env files; app passwords must be stored locally (not in chat). - Issue: IMAP auth failures were debugged; both accounts tested; need Gmail-side resolution when failures reappear. - Agreement: persist an “ops recap” after each session and maintain an “automation agreements”",
-      "recallCount": 1,
+      "recallCount": 2,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 0.3517774522304535,
-      "maxScore": 0.3517774522304535,
+      "totalScore": 0.7557748079299926,
+      "maxScore": 0.40399735569953915,
       "firstRecalledAt": "2026-04-19T13:32:06.611Z",
-      "lastRecalledAt": "2026-04-19T13:32:06.611Z",
+      "lastRecalledAt": "2026-04-23T09:01:59.576Z",
       "queryHashes": [
-        "99f8b1ce25ef"
+        "99f8b1ce25ef",
+        "5a36804b9c0c"
       ],
       "recallDays": [
-        "2026-04-19"
+        "2026-04-19",
+        "2026-04-23"
       ],
       "conceptTags": [
         "bills-scan.py",
@@ -110,19 +112,21 @@
       "endLine": 5,
       "source": "memory",
       "snippet": "# 2026-04-21 - Started the daily brief at 09:35 BST. - Recent open loop to carry forward: Oracle-side Telegram router still likely needs patching so YouTube/video messages consistently go to `telegram-video-processing`. - Yesterday’s work to remember: Telegram video processing was tightened to be summary-only, ignore metadata/timestamps, and the Oracle export paths were aligned toward the canonical Second-Brain video directories.",
-      "recallCount": 2,
+      "recallCount": 3,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 0.8092982292175293,
+      "totalScore": 1.195275145769119,
       "maxScore": 0.41165236234664915,
       "firstRecalledAt": "2026-04-22T11:37:31.975Z",
-      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "lastRecalledAt": "2026-04-23T09:01:59.576Z",
       "queryHashes": [
         "54d094803fc3",
-        "cdb4e4c7ce3d"
+        "cdb4e4c7ce3d",
+        "5a36804b9c0c"
       ],
       "recallDays": [
-        "2026-04-22"
+        "2026-04-22",
+        "2026-04-23"
       ],
       "conceptTags": [
         "router",

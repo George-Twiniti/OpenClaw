@@ -73,6 +73,17 @@ export STARTUP_BRIEF_OUTPUT="$OUTPUT_JSON"
 export STARTUP_BRIEF_RUNTIME_DIR="$RUNTIME_DIR"
 python3 "$WORKSPACE/scripts/startup_brief.py"
 
+if [[ -x "$WORKSPACE/scripts/oracle-http-bridge.mjs" ]]; then
+  if ! pgrep -f "oracle-http-bridge.mjs" >/dev/null 2>&1; then
+    nohup node "$WORKSPACE/scripts/oracle-http-bridge.mjs" >/tmp/oracle-http-bridge.log 2>&1 &
+  fi
+fi
+if [[ -x "$WORKSPACE/scripts/local-http-bridge.mjs" ]]; then
+  if ! pgrep -f "local-http-bridge.mjs" >/dev/null 2>&1; then
+    nohup node "$WORKSPACE/scripts/local-http-bridge.mjs" >/tmp/local-http-bridge.log 2>&1 &
+  fi
+fi
+
 if [[ -x "$WORKSPACE/scripts/oracle-bridge-sync.mjs" ]]; then
   node "$WORKSPACE/scripts/oracle-bridge-sync.mjs" status >/dev/null || true
 fi

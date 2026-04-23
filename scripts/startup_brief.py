@@ -21,6 +21,7 @@ from pathlib import Path
 from datetime import datetime, timedelta, timezone
 import imaplib, email
 from email.header import decode_header
+from email.utils import parsedate_to_datetime
 import subprocess
 import signal
 import signal
@@ -41,25 +42,6 @@ def load_env(path):
             os.environ[k] = v
 
 
-def load_secrete_overrides(path):
-    path = Path(path)
-    if not path.exists():
-        return
-    for line in path.read_text().splitlines():
-        if not line or line.startswith('#') or ':' not in line:
-            continue
-        key, value = line.split(':', 1)
-        key = key.strip().lower()
-        value = value.strip()
-        if key.startswith('gmail app password'):
-            # handled by the label account line above
-            continue
-        if key.startswith('gmail1_ical_url'):
-            os.environ['GMAIL1_ICAL_URL'] = value.strip('"')
-        elif key.startswith('gmail2_ical_url'):
-            os.environ['GMAIL2_ICAL_URL'] = value.strip('"')
-        elif key.startswith('mailbox email'):
-            os.environ['MAILBOX_EMAIL'] = value.strip('"')
 
 
 def is_sops_encrypted_env(path):
@@ -97,7 +79,6 @@ DEFAULT_GMAIL_IMAP_ENV = Path('/home/george/.openclaw/workspace/secrets/gmail_im
 DEFAULT_GMAIL_ENV = Path('/home/george/.openclaw/workspace/secrets/gmail.env')
 DEFAULT_EXCHANGE_ENV = Path('/home/george/.openclaw/workspace/secrets/exchange.env')
 DEFAULT_GMAIL_ICAL_ENV = Path('/home/george/.openclaw/workspace/secrets/gmail_ical.env')
-DEFAULT_SECRETE_FILE = Path('/home/george/.openclaw/workspace/secrets/Secrete.txt')
 DEFAULT_NEON_KEY_FILE = Path('/home/george/.openclaw/keys/Neon_Key.txt')
 
 GMAIL_IMAP_ENV = Path(os.getenv('GMAIL_IMAP_ENV', str(DEFAULT_GMAIL_IMAP_ENV)))
@@ -125,23 +106,49 @@ if not has_verified_gmail:
     load_env(GMAIL_ENV)
 
 GMAIL_IMAP_ENV = decrypt_env_if_needed(GMAIL_IMAP_ENV, _decrypt_dir)
-EXCHANGE_ENV = decrypt_env_if_needed(EXCHANGE_ENV, _decrypt_dir)
+# Exchange settings now come exclusively from Neon app_settings; do not decrypt legacy exchange.env.
 GMAIL_ICAL_ENV = decrypt_env_if_needed(GMAIL_ICAL_ENV, _decrypt_dir)
 
 load_env(GMAIL_IMAP_ENV)
 load_env(EXCHANGE_ENV)
 load_env(GMAIL_ICAL_ENV)
-load_secrete_overrides(os.getenv('STARTUP_BRIEF_SECRETE_FILE', str(DEFAULT_SECRETE_FILE)))
 # Prefer the verified local Gmail overrides over any values that may come from decrypted envs.
 for k in ('GMAIL1_EMAIL', 'GMAIL1_APP_PASSWORD', 'GMAIL2_EMAIL', 'GMAIL2_APP_PASSWORD', 'GMAIL1_ICAL_URL', 'GMAIL2_ICAL_URL'):
     if os.getenv(f'STARTUP_BRIEF_{k}'):
         os.environ[k] = os.getenv(f'STARTUP_BRIEF_{k}')
 
 
+
+
+def db_query_app_settings():
+    key_file = Path(os.getenv('NEON_KEY_FILE', str(DEFAULT_NEON_KEY_FILE)))
+    if not key_file.exists():
+        alt = Path('/home/george/.openclaw/workspace/secrets/Neon_Key.txt')
+        if alt.exists():
+            key_file = alt
+        else:
+            raise RuntimeError(f'Neon key file not found: {key_file}')
+    raw = key_file.read_text().strip()
+    if raw.startswith('psql '):
+        raw = raw[5:].strip().strip("'\"")
+    sql = "select key, value from app_settings order by key"
+    result = subprocess.run(['psql', raw, '-At', '-F', '	', '-c', sql], capture_output=True, text=True, check=True)
+    rows = []
+    for line in result.stdout.splitlines():
+        if '	' not in line:
+            continue
+        k, v = line.split('	', 1)
+        rows.append((k, v))
+    return rows
+
 def load_db_settings():
     key_file = Path(os.getenv('NEON_KEY_FILE', str(DEFAULT_NEON_KEY_FILE)))
     if not key_file.exists():
-        return {}
+        alt = Path('/home/george/.openclaw/workspace/secrets/Neon_Key.txt')
+        if alt.exists():
+            key_file = alt
+        else:
+            return {}
     raw = key_file.read_text().strip()
     if raw.startswith('psql '):
         raw = raw[5:].strip().strip("'\"")
@@ -161,10 +168,19 @@ def load_db_settings():
         return {}
 
 _db_settings = load_db_settings()
-for k in ('gmail1_ical_url', 'gmail2_ical_url'):
+for k in ('gmail1_ical_url', 'gmail2_ical_url', 'exchange_tenant_id', 'exchange_client_id', 'exchange_client_secret', 'exchange_mailbox_email'):
     env_key = k.upper()
     if _db_settings.get(k):
         os.environ[env_key] = _db_settings[k]
+# Back-compat aliases used by this script.
+if os.getenv('EXCHANGE_TENANT_ID'):
+    os.environ['TENANT_ID'] = os.environ['EXCHANGE_TENANT_ID']
+if os.getenv('EXCHANGE_CLIENT_ID'):
+    os.environ['CLIENT_ID'] = os.environ['EXCHANGE_CLIENT_ID']
+if os.getenv('EXCHANGE_CLIENT_SECRET'):
+    os.environ['CLIENT_SECRET'] = os.environ['EXCHANGE_CLIENT_SECRET']
+if os.getenv('EXCHANGE_MAILBOX_EMAIL'):
+    os.environ['MAILBOX_EMAIL'] = os.environ['EXCHANGE_MAILBOX_EMAIL']
 
 # --- Gmail (IMAP) unread summary ---
 
@@ -194,8 +210,8 @@ def with_timeout(seconds, func, *args, **kwargs):
         signal.signal(signal.SIGALRM, prev)
 
 
-def gmail_unread(addr, pw, label='INBOX', limit=10, debug=False):
-    m = imaplib.IMAP4_SSL('imap.gmail.com', timeout=10)
+def gmail_unread(addr, pw, label='INBOX', limit=3, debug=False, max_age_hours=None):
+    m = imaplib.IMAP4_SSL('imap.gmail.com', timeout=20)
     try:
         m.login(addr, pw)
         if debug:
@@ -208,15 +224,31 @@ def gmail_unread(addr, pw, label='INBOX', limit=10, debug=False):
     typ, data = m.search(None, 'UNSEEN')
     ids = data[0].split() if typ=='OK' else []
     msgs = []
-    for msg_id in ids[-limit:]:
+    now_utc = datetime.now(timezone.utc)
+    for msg_id in ids[::-1]:
+        if len(msgs) >= limit:
+            break
         typ, msg_data = m.fetch(msg_id, '(RFC822)')
         if typ!='OK':
             continue
         msg = email.message_from_bytes(msg_data[0][1])
+        dt = None
+        try:
+            dt = parsedate_to_datetime(msg.get('Date'))
+            if dt and dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            dt = None
+        if max_age_hours is not None and dt:
+            age_hours = (now_utc - dt.astimezone(timezone.utc)).total_seconds() / 3600.0
+            if age_hours > max_age_hours:
+                continue
+        elif dt and (now_utc - dt.astimezone(timezone.utc)).days > 7:
+            continue
         msgs.append({
             'from': decode(msg.get('From')),
             'subject': decode(msg.get('Subject')),
-            'date': msg.get('Date')
+            'date': dt.isoformat() if dt else msg.get('Date')
         })
     m.logout()
     return msgs
@@ -233,6 +265,8 @@ for i in (1,2):
 
 def graph_token():
     TENANT=os.getenv('TENANT_ID'); CLIENT_ID=os.getenv('CLIENT_ID'); CLIENT_SECRET=os.getenv('CLIENT_SECRET')
+    if not TENANT or not CLIENT_ID or not CLIENT_SECRET:
+        raise RuntimeError('Exchange env missing TENANT_ID, CLIENT_ID, or CLIENT_SECRET')
     body = urllib.parse.urlencode({
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
@@ -244,22 +278,47 @@ def graph_token():
         return json.loads(r.read().decode())['access_token']
 
 
+def _graph_json(url, token):
+    req = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}', 'Accept':'application/json'})
+    try:
+        with urllib.request.urlopen(req) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors='ignore') if hasattr(e, 'read') else ''
+        raise RuntimeError(f'HTTP {e.code} {e.reason} {body[:500]} url={url}')
+
+
+def graph_mailbox_candidates(token, mailbox):
+    candidates = []
+    if mailbox:
+        candidates.append(mailbox)
+    return candidates
+
+
 def exchange_unread(token, mailbox, limit=10):
     params = urllib.parse.urlencode({
         '$top': limit,
         '$filter': 'isRead eq false'
     })
-    url = f"https://graph.microsoft.com/v1.0/users/{urllib.parse.quote(mailbox)}/mailFolders/Inbox/messages?{params}"
-    req = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}', 'Accept':'application/json'})
-    with urllib.request.urlopen(req) as r:
-        data=json.loads(r.read().decode())
-        return [
-            {
-                'from': m.get('from',{}).get('emailAddress',{}).get('address'),
-                'subject': m.get('subject'),
-                'date': m.get('receivedDateTime')
-            } for m in data.get('value',[])
-        ]
+    candidates = graph_mailbox_candidates(token, mailbox)
+    last_err = None
+    for candidate in candidates:
+        path = '/me' if candidate == 'me' else f'/users/{urllib.parse.quote(candidate)}'
+        url = f"https://graph.microsoft.com/v1.0{path}/mailFolders/Inbox/messages?{params}"
+        try:
+            data = _graph_json(url, token)
+            return [
+                {
+                    'from': m.get('from',{}).get('emailAddress',{}).get('address'),
+                    'subject': m.get('subject'),
+                    'date': m.get('receivedDateTime')
+                } for m in data.get('value',[])
+            ]
+        except Exception as e:
+            last_err = e
+            if '404' not in str(e):
+                raise
+    raise last_err or RuntimeError('Exchange unread lookup failed')
 
 
 def exchange_events(token, mailbox, hours=24, limit=10):
@@ -271,18 +330,26 @@ def exchange_events(token, mailbox, hours=24, limit=10):
         '$top': limit,
         '$orderby': 'start/dateTime'
     })
-    url = f"https://graph.microsoft.com/v1.0/users/{urllib.parse.quote(mailbox)}/calendarView?{params}"
-    req = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}', 'Accept':'application/json'})
-    with urllib.request.urlopen(req) as r:
-        data=json.loads(r.read().decode())
-        events=[]
-        for e in data.get('value', []):
-            events.append({
-                'subject': e.get('subject'),
-                'start': e.get('start',{}).get('dateTime'),
-                'end': e.get('end',{}).get('dateTime')
-            })
-        return events
+    candidates = graph_mailbox_candidates(token, mailbox)
+    last_err = None
+    for candidate in candidates:
+        path = '/me' if candidate == 'me' else f'/users/{urllib.parse.quote(candidate)}'
+        url = f"https://graph.microsoft.com/v1.0{path}/calendarView?{params}"
+        try:
+            data = _graph_json(url, token)
+            events=[]
+            for e in data.get('value', []):
+                events.append({
+                    'subject': e.get('subject'),
+                    'start': e.get('start',{}).get('dateTime'),
+                    'end': e.get('end',{}).get('dateTime')
+                })
+            return events
+        except Exception as e:
+            last_err = e
+            if '404' not in str(e):
+                raise
+    raise last_err or RuntimeError('Exchange events lookup failed')
 
 # --- Gmail iCal ---
 
@@ -341,27 +408,37 @@ def parse_ical_events(url, hours=24):
     return events
 
 # --- Build summary ---
-summary = { 'ts': datetime.now(timezone.utc).isoformat(), 'gmail': {}, 'exchange': {}, 'gmail_cal': {}, 'errors': [], 'health': {} }
+summary = { 'ts': datetime.now(timezone.utc).isoformat(), 'gmail': {}, 'exchange': {}, 'gmail_cal': {}, 'errors': [], 'health': {}, 'debug': {} }
 
 DEBUG_GMAIL = os.getenv('DEBUG_GMAIL_IMAP') == '1'
 for addr,pw in gmail_accounts:
     try:
-        summary['gmail'][addr] = with_timeout(25, gmail_unread, addr, pw, debug=DEBUG_GMAIL)
+        summary['gmail'][addr] = with_timeout(15, gmail_unread, addr, pw, debug=DEBUG_GMAIL, label='INBOX', limit=3, max_age_hours=24 if addr == 'georgebroadbent67@gmail.com' else None)
     except Exception as e:
         summary['gmail'][addr] = {"error": str(e)}
         summary['errors'].append({"gmail": addr, "error": str(e)})
 
 MAILBOX = os.getenv('MAILBOX_EMAIL')
-if MAILBOX:
+summary['debug']['tenant_id'] = os.getenv('TENANT_ID')
+summary['debug']['mailbox_email'] = MAILBOX
+summary['debug']['db_app_settings_keys'] = sorted(_db_settings.keys())
+if not MAILBOX:
+    summary['exchange']['error'] = 'MAILBOX_EMAIL is not set'
+else:
     try:
         token = with_timeout(20, graph_token)
+        summary['debug']['graph_candidates'] = graph_mailbox_candidates(token, MAILBOX)
+        summary['debug']['gmail_calendar_sources'] = {
+            'gmail1': os.getenv('GMAIL1_ICAL_URL') is not None,
+            'gmail2': os.getenv('GMAIL2_ICAL_URL') is not None,
+        }
+        summary['debug']['gmail1_ical_url'] = os.getenv('GMAIL1_ICAL_URL')[:40] if os.getenv('GMAIL1_ICAL_URL') else None
+        summary['debug']['gmail2_ical_url'] = os.getenv('GMAIL2_ICAL_URL')[:40] if os.getenv('GMAIL2_ICAL_URL') else None
         summary['exchange']['unread'] = with_timeout(20, exchange_unread, token, MAILBOX)
         summary['exchange']['events_next_24h'] = with_timeout(20, exchange_events, token, MAILBOX)
     except Exception as e:
         summary['exchange']['error'] = str(e)
         summary['errors'].append({"exchange": MAILBOX, "error": str(e)})
-else:
-    summary['exchange']['error'] = 'MAILBOX_EMAIL is not set'
 
 for i in (1,2):
     url = os.getenv(f'GMAIL{i}_ICAL_URL')
@@ -395,8 +472,12 @@ def human_summary(summary):
         if not items:
             lines.append(f"- {addr}: none")
             continue
-        for item in items[:5]:
+        shown = 0
+        for item in items:
             lines.append(f"- {addr}: {item.get('from','?')} — {item.get('subject','?')}")
+            shown += 1
+            if shown >= 10:
+                break
 
     lines.append('')
     lines.append('Exchange:')
@@ -408,15 +489,30 @@ def human_summary(summary):
         lines.append(f"- unread: {len(unread)}")
         for item in unread[:5]:
             lines.append(f"  - {item.get('from','?')} — {item.get('subject','?')}")
+        from zoneinfo import ZoneInfo
+        london = ZoneInfo('Europe/London')
         lines.append(f"- events next 24h: {len(events)}")
         for item in events[:5]:
-            lines.append(f"  - {item.get('start','?')} — {item.get('subject','?')}")
+            s = item.get('start','?')
+            try:
+                dt = datetime.fromisoformat(s.replace('Z', '+00:00'))
+                s = dt.astimezone(london).strftime('%Y-%m-%d %H:%M %Z')
+            except Exception:
+                pass
+            lines.append(f"  - {s} — {item.get('subject','?')}")
+    dbg = summary.get('debug', {})
+    if dbg:
+        lines.append('')
+        lines.append('Exchange debug:')
+        for k in ('tenant_id', 'mailbox_email', 'graph_me_mailbox'):
+            if k in dbg:
+                lines.append(f"- {k}: {dbg.get(k)}")
 
     lines.append('')
     lines.append('Gmail calendars:')
     for key, items in gmail_cal.items():
         lines.append(f"- {key}: {len(items)} upcoming")
-        for item in items[:5]:
+        for item in items[:10]:
             lines.append(f"  - {item.get('start','?')} — {item.get('summary','?')}")
     return '\n'.join(lines)
 
