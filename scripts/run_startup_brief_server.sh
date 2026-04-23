@@ -73,4 +73,12 @@ export STARTUP_BRIEF_OUTPUT="$OUTPUT_JSON"
 export STARTUP_BRIEF_RUNTIME_DIR="$RUNTIME_DIR"
 python3 "$WORKSPACE/scripts/startup_brief.py"
 
+if [[ -x "$WORKSPACE/scripts/oracle-bridge-sync.mjs" ]]; then
+  node "$WORKSPACE/scripts/oracle-bridge-sync.mjs" status >/dev/null || true
+fi
+if [[ -x "$WORKSPACE/scripts/oracle-transcript-bridge.mjs" ]]; then
+  node "$WORKSPACE/scripts/oracle-transcript-bridge.mjs" drain >/dev/null || true
+  node "$WORKSPACE/scripts/oracle-transcript-bridge.mjs" collect >/dev/null || true
+fi
+
 echo "Wrote startup brief to $OUTPUT_JSON"
