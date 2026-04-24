@@ -24,27 +24,45 @@ async function extractTranscript(url) {
   return { title: null, transcript: out.stdout || out.stderr || '' };
 }
 
-async function processOne() {
-  const { job } = await jget(`${bridgeUrl}/jobs/next`);
-  if (!job) return false;
-  const result = { jobId: job.id, url: job.url, title: null, transcript: null, status: 'failed', notes: null };
+async function getNextJob() {
+  const next = await jget(`${bridgeUrl}/jobs/next`);
+  return next?.job ?? null;
+}
+
+async function getJobById(id) {
+  const payload = await jget(`${bridgeUrl}/jobs/${id}`);
+  return payload?.job ?? null;
+}
+
+async function processJob(job) {
+  if (!job?.id) throw new Error('Bridge returned a job without an id');
+  const current = (await getJobById(job.id)) || job;
+  const result = {
+    jobId: current.id,
+    url: current.url,
+    title: current.title ?? null,
+    transcript: current.transcript ?? null,
+    status: 'failed',
+    notes: current.notes ?? null,
+  };
   try {
-    const extracted = await extractTranscript(job.url);
-    result.title = extracted.title;
+    const extracted = await extractTranscript(current.url);
+    result.title = extracted.title ?? current.title ?? null;
     result.transcript = extracted.transcript;
     result.status = 'completed';
+    result.notes = null;
   } catch (error) {
     result.notes = error?.message ?? String(error);
   }
-  await jpost(`${bridgeUrl}/jobs/${job.id}/result`, result);
+  await jpost(`${bridgeUrl}/jobs/${current.id}/result`, result);
   process.stdout.write(JSON.stringify(result, null, 2) + '\n');
-  return true;
 }
 
 async function main() {
   while (true) {
-    const worked = await processOne();
-    if (!worked) break;
+    const job = await getNextJob();
+    if (!job) break;
+    await processJob(job);
   }
 }
 
