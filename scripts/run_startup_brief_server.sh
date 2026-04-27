@@ -5,21 +5,19 @@ WORKSPACE="${WORKSPACE:-$HOME/.openclaw/workspace}"
 RUNTIME_DIR="${RUNTIME_DIR:-$HOME/.openclaw/state/startup-brief}"
 TMP_DIR="$RUNTIME_DIR/tmp"
 OUTPUT_JSON="${STARTUP_BRIEF_OUTPUT:-$RUNTIME_DIR/latest.json}"
-AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-$HOME/.openclaw/keys/age.key}"
 SECRETE_FILE="${STARTUP_BRIEF_SECRETE_FILE:-$WORKSPACE/secrets/Secrete.txt}"
 OVERRIDE_ENV="$TMP_DIR/startup-brief-overrides.env"
+GMAIL_ENV_FILE="${GMAIL_ENV_FILE:-$WORKSPACE/secrets/gmail.env}"
+EXCHANGE_ENV_FILE="${EXCHANGE_ENV_FILE:-$WORKSPACE/secrets/exchange.env}"
+GMAIL_ICAL_ENV_FILE="${GMAIL_ICAL_ENV_FILE:-$WORKSPACE/secrets/gmail_ical.env}"
+GMAIL_IMAP_ENV_FILE="${GMAIL_IMAP_ENV_FILE:-$WORKSPACE/secrets/gmail_imap.env}"
 
 mkdir -p "$TMP_DIR" "$(dirname "$OUTPUT_JSON")"
 chmod 700 "$RUNTIME_DIR" "$TMP_DIR"
 
-if [[ ! -f "$AGE_KEY_FILE" ]]; then
-  echo "Missing AGE key: $AGE_KEY_FILE" >&2
-  exit 1
-fi
-
-for secret in gmail.env exchange.env gmail_ical.env; do
-  if [[ ! -f "$WORKSPACE/secrets/$secret" ]]; then
-    echo "Missing encrypted secret: $WORKSPACE/secrets/$secret" >&2
+for secret in "$GMAIL_ENV_FILE" "$EXCHANGE_ENV_FILE" "$GMAIL_ICAL_ENV_FILE"; do
+  if [[ ! -f "$secret" ]]; then
+    echo "Missing env file: $secret" >&2
     exit 1
   fi
 done
@@ -29,17 +27,15 @@ if [[ ! -f "$SECRETE_FILE" ]]; then
   exit 1
 fi
 
-if ! command -v sops >/dev/null 2>&1; then
-  echo "sops is required but not installed" >&2
-  exit 1
-fi
-
-export SOPS_AGE_KEY_FILE="$AGE_KEY_FILE"
-export SOPS_CONFIG="$WORKSPACE/.sops.yaml"
 export STARTUP_BRIEF_RUNTIME_DIR="$RUNTIME_DIR"
 export STARTUP_BRIEF_SECRETE_FILE="$SECRETE_FILE"
+export GMAIL_ENV="$GMAIL_ENV_FILE"
+export EXCHANGE_ENV="$EXCHANGE_ENV_FILE"
+export GMAIL_ICAL_ENV="$GMAIL_ICAL_ENV_FILE"
+export GMAIL_IMAP_ENV="${GMAIL_IMAP_ENV_FILE:-$OVERRIDE_ENV}"
 
-python3 - "$SECRETE_FILE" "$OVERRIDE_ENV" <<'PY'
+if [[ ! -f "$GMAIL_IMAP_ENV" ]]; then
+  python3 - "$SECRETE_FILE" "$OVERRIDE_ENV" <<'PY'
 import sys
 from pathlib import Path
 secrete = Path(sys.argv[1])
@@ -49,24 +45,12 @@ content = []
 for line in lines:
     if line.startswith('GMAIL1_ICAL_URL=') or line.startswith('GMAIL2_ICAL_URL='):
         content.append(line)
-content.append('GMAIL1_EMAIL=georgebroadbent67@gmail.com')
-content.append('GMAIL1_APP_PASSWORD=exleeeapffivwqri')
-content.append('GMAIL2_EMAIL=xbr350@gmail.com')
-content.append('GMAIL2_APP_PASSWORD=vhszuarvdjmfveov')
 out.write_text('\n'.join(content) + '\n')
 out.chmod(0o600)
 PY
+  export GMAIL_IMAP_ENV="$OVERRIDE_ENV"
+fi
 
-export GMAIL1_EMAIL=georgebroadbent67@gmail.com
-export GMAIL1_APP_PASSWORD=exleeeapffivwqri
-export GMAIL2_EMAIL=xbr350@gmail.com
-export GMAIL2_APP_PASSWORD=vhszuarvdjmfveov
-export GMAIL1_ICAL_URL="https://calendar.google.com/calendar/ical/xbr350%40gmail.com/private-f10c3f0c11fd696021bc1364c5d3ce25/basic.ics"
-export GMAIL2_ICAL_URL="https://calendar.google.com/calendar/ical/georgebroadbent67%40gmail.com/private-79ba5515b899207d72190cb7963b69f2/basic.ics"
-export GMAIL_ENV="$WORKSPACE/secrets/gmail.env"
-export EXCHANGE_ENV="$WORKSPACE/secrets/exchange.env"
-export GMAIL_ICAL_ENV="$WORKSPACE/secrets/gmail_ical.env"
-export GMAIL_IMAP_ENV="$OVERRIDE_ENV"
 python3 "$WORKSPACE/scripts/bills_scan.py"
 
 export STARTUP_BRIEF_OUTPUT="$OUTPUT_JSON"

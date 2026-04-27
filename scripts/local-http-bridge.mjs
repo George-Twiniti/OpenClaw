@@ -8,7 +8,7 @@ const stateDir = path.join(base, 'state');
 const queuePath = path.join(stateDir, 'local-video-transcript-queue.json');
 const resultsPath = path.join(stateDir, 'local-video-transcript-results.jsonl');
 const port = Number(process.env.LOCAL_BRIDGE_PORT || 8788);
-const host = process.env.LOCAL_BRIDGE_HOST || '127.0.0.1';
+const host = process.env.LOCAL_BRIDGE_HOST || '0.0.0.0';
 
 async function readJson(file, fallback) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch { return fallback; }

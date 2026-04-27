@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 
-const oracleUrl = process.env.ORACLE_BRIDGE_URL || 'https://gbroadbent5-1.taild942c7.ts.net';
+const oracleUrl = process.env.ORACLE_BRIDGE_URL || 'http://gbroadbent5.taild942c7.ts.net:8787';
 const localUrl = process.env.LOCAL_BRIDGE_URL || 'http://gbroadbent5-1.taild942c7.ts.net:8788';
 
 async function jget(url) {
