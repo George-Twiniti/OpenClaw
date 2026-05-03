@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    {
+      "id": "job_oracle_retry_001",
+      "url": "https://youtu.be/5ztI_dbj6ek?is=J1XdBI3-tz7oATEN",
+      "title": null,
+      "status": "queued",
+      "claimedAt": null,
+      "completedAt": null,
+      "failedAt": null,
+      "notes": null,
+      "transcript": null
+    }
+  ]
+}

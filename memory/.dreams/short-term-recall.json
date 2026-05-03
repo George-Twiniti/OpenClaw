@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-23T09:01:59.576Z",
+  "updatedAt": "2026-05-01T15:16:32.411Z",
   "entries": {
     "memory:memory/2026-03-16.md:1:11": {
       "key": "memory:memory/2026-03-16.md:1:11",
@@ -42,23 +42,25 @@
       "endLine": 3,
       "source": "memory",
       "snippet": "- Telegram video processing was tightened again: the reply should be summary-only and must not include metadata analysis, policy commentary, or timestamp discussion. - Open loop: the Oracle-side Telegram interface/router likely still has its own prompt that is overriding the skill, so inspect and patch the router prompt/config next.",
-      "recallCount": 5,
+      "recallCount": 6,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 2.1733659565448757,
+      "totalScore": 2.5724830687046047,
       "maxScore": 0.4930062770843506,
       "firstRecalledAt": "2026-04-21T10:46:47.901Z",
-      "lastRecalledAt": "2026-04-22T11:58:45.163Z",
+      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
       "queryHashes": [
         "b94e712c4325",
         "253394e76e84",
         "6c6145b03f4e",
         "54d094803fc3",
-        "cdb4e4c7ce3d"
+        "cdb4e4c7ce3d",
+        "e0c49ecab303"
       ],
       "recallDays": [
         "2026-04-21",
-        "2026-04-22"
+        "2026-04-22",
+        "2026-04-29"
       ],
       "conceptTags": [
         "router",
@@ -112,21 +114,23 @@
       "endLine": 5,
       "source": "memory",
       "snippet": "# 2026-04-21 - Started the daily brief at 09:35 BST. - Recent open loop to carry forward: Oracle-side Telegram router still likely needs patching so YouTube/video messages consistently go to `telegram-video-processing`. - Yesterday’s work to remember: Telegram video processing was tightened to be summary-only, ignore metadata/timestamps, and the Oracle export paths were aligned toward the canonical Second-Brain video directories.",
-      "recallCount": 3,
+      "recallCount": 4,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 1.195275145769119,
+      "totalScore": 1.5641319692134856,
       "maxScore": 0.41165236234664915,
       "firstRecalledAt": "2026-04-22T11:37:31.975Z",
-      "lastRecalledAt": "2026-04-23T09:01:59.576Z",
+      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
       "queryHashes": [
         "54d094803fc3",
         "cdb4e4c7ce3d",
-        "5a36804b9c0c"
+        "5a36804b9c0c",
+        "e0c49ecab303"
       ],
       "recallDays": [
         "2026-04-22",
-        "2026-04-23"
+        "2026-04-23",
+        "2026-04-29"
       ],
       "conceptTags": [
         "router",
@@ -200,6 +204,285 @@
         "youtube/video",
         "transcripts/summaries",
         "second-brain"
+      ]
+    },
+    "memory:memory/2026-04-14.md:10:18": {
+      "key": "memory:memory/2026-04-14.md:10:18",
+      "path": "memory/2026-04-14.md",
+      "startLine": 10,
+      "endLine": 18,
+      "source": "memory",
+      "snippet": "- Deployed the Twiniti AI Providers Landscape page to the Oracle web server at `/srv/twiniti-aeo/ai-providers-landscape/index.html`; live URL is `http://aeo.twiniti.ai/ai-providers-landscape`. - Oracle host facts confirmed: SSH alias `twiniti-alt-web`, IP `132.145.195.174`, user `ubuntu`, key `~/.ssh/ssh-key-2026-04-10.key`, nginx site config `/etc/nginx/sites-enabled/twiniti`, public root `/srv/twiniti-aeo`, wiki root `/srv/twiniti-wiki`. - Added `robots.txt` and `sitemap.xml` to the AEO site root on Oracle. `robots.txt` points crawlers at `aeo.twiniti.ai`, `wiki.twiniti.ai`, and `ai-landscape.twiniti.ai` sitemaps. - Configured nginx to serve `ai-landscape.twiniti.ai` from the same Oracle h",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.41660484969615935,
+      "maxScore": 0.41660484969615935,
+      "firstRecalledAt": "2026-04-23T20:56:31.109Z",
+      "lastRecalledAt": "2026-04-23T20:56:31.109Z",
+      "queryHashes": [
+        "6054b4ee22e2"
+      ],
+      "recallDays": [
+        "2026-04-23"
+      ],
+      "conceptTags": [
+        "twiniti-alt-web",
+        "132.145.195.174",
+        "ssh/ssh-key-2026-04-10.key",
+        "etc/nginx/sites-enabled/twiniti",
+        "srv/twiniti-aeo",
+        "srv/twiniti-wiki",
+        "robots.txt",
+        "sitemap.xml"
+      ]
+    },
+    "memory:memory/2026-04-14.md:45:55": {
+      "key": "memory:memory/2026-04-14.md:45:55",
+      "path": "memory/2026-04-14.md",
+      "startLine": 45,
+      "endLine": 55,
+      "source": "memory",
+      "snippet": "- The user wants the AEO work to proceed in batches while they are away; the best-effort goal is to complete the inventory and first-batch draft structure. - The key Twiniti-owned candidate pages for AEO are: About Twiniti, services overview, Praxis, SignalDesk, Lexi for Construction, Lexi Lite, SEO strategy, and the consulting/services catalogue. - The AEO content strategy should be grounded in Twiniti’s actual products and positioning, not generic SEO or the user’s personal note archive. - For the consulting storyboard / narrative pages, the executive-first structure remains the right approach: answer up front, then evidence, then implications and next steps. - For SignalDesk, the most acc",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.4021978110074997,
+      "maxScore": 0.4021978110074997,
+      "firstRecalledAt": "2026-04-23T20:56:31.109Z",
+      "lastRecalledAt": "2026-04-23T20:56:31.109Z",
+      "queryHashes": [
+        "6054b4ee22e2"
+      ],
+      "recallDays": [
+        "2026-04-23"
+      ],
+      "conceptTags": [
+        "best-effort",
+        "first-batch",
+        "twiniti-owned",
+        "consulting/services",
+        "executive-first",
+        "the",
+        "user",
+        "wants"
+      ]
+    },
+    "memory:memory/2026-04-14.md:38:46": {
+      "key": "memory:memory/2026-04-14.md:38:46",
+      "path": "memory/2026-04-14.md",
+      "startLine": 38,
+      "endLine": 46,
+      "source": "memory",
+      "snippet": "- The `aeo-page-template` skill is the correct shared pattern for the page build; inventory and page generation should now be driven from Twiniti-owned content and live web verification. - User asked to proceed and will step away for about 30 minutes; best effort should continue autonomously within the approved scope. - The key Twiniti-owned candidate pages for AEO are: About Twiniti, services overview, Praxis, SignalDesk, Lexi for Construction, Lexi Lite, SEO strategy, and the consulting/services catalogue. - The AEO content strategy should be grounded in Twiniti’s actual products and positioning, not generic SEO or the user’s personal note archive. - For the consulting storyboard / narrati",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3963044226169586,
+      "maxScore": 0.3963044226169586,
+      "firstRecalledAt": "2026-04-23T20:56:31.109Z",
+      "lastRecalledAt": "2026-04-23T20:56:31.109Z",
+      "queryHashes": [
+        "6054b4ee22e2"
+      ],
+      "recallDays": [
+        "2026-04-23"
+      ],
+      "conceptTags": [
+        "aeo-page-template",
+        "twiniti-owned",
+        "consulting/services",
+        "the",
+        "aeo",
+        "page",
+        "template",
+        "skill"
+      ]
+    },
+    "memory:memory/2026-04-14.md:18:25": {
+      "key": "memory:memory/2026-04-14.md:18:25",
+      "path": "memory/2026-04-14.md",
+      "startLine": 18,
+      "endLine": 25,
+      "source": "memory",
+      "snippet": "- AEO site root currently contains more than 10 pages/files; top-level public entries include `who-we-are`, `praxis`, `signaldesk`, `lexi`, `services-detail`, `ai-ready-data-governance-platform`, `join-the-waitlist`, `get-in-touch-with-us`, `trainingcontact`, `feedback_form`, `signaldesk_waitlist`, plus legal pages and `index.html`. - Existing AEO pages are intentionally AI-search optimized and should be rewritten into a concise, structured, AI-friendly format rather than a human-facing narrative. - Reviewed the existing AEO-style content and Google header; the Google tag to carry forward for AEO pages is `G-YXJPDMHPE1`. - The root AEO pages on Oracle are currently simple HTML files, so the",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3925573199987411,
+      "maxScore": 0.3925573199987411,
+      "firstRecalledAt": "2026-04-23T20:56:31.109Z",
+      "lastRecalledAt": "2026-04-23T20:56:31.109Z",
+      "queryHashes": [
+        "6054b4ee22e2"
+      ],
+      "recallDays": [
+        "2026-04-23"
+      ],
+      "conceptTags": [
+        "pages/files",
+        "top-level",
+        "who-we-are",
+        "services-detail",
+        "join-the-waitlist",
+        "get-in-touch-with-us",
+        "feedback-form",
+        "signaldesk-waitlist"
+      ]
+    },
+    "memory:memory/2026-04-23.md:12:17": {
+      "key": "memory:memory/2026-04-23.md:12:17",
+      "path": "memory/2026-04-23.md",
+      "startLine": 12,
+      "endLine": 17,
+      "source": "memory",
+      "snippet": "- The missing piece during troubleshooting was the actual local job API; status-only shells were not enough. - GitHub push closeout was incomplete earlier in the day: OpenClaw push was blocked by a secret in history, and Second-Brain push needed a rebase. That blocker should be remembered as a real unfinished task from this session. - AEO site expansion completed and pushed to `Twiniti-Hub/AEO` on `main` (`b7438dd`), with homepage, LLM Index, key pages, and sitemap updates. - LLM Index now includes the newer canonical AEO pages: About Twiniti, Praxis, SignalDesk, Lexi, Lexi Lite, Lexi for Construction, and SEO / AI-search strategy (`1b099c1`). - The AEO repo is the place where the current li",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.39570819735527035,
+      "maxScore": 0.39570819735527035,
+      "firstRecalledAt": "2026-04-23T20:58:38.481Z",
+      "lastRecalledAt": "2026-04-23T20:58:38.481Z",
+      "queryHashes": [
+        "748968edf6ff"
+      ],
+      "recallDays": [
+        "2026-04-23"
+      ],
+      "conceptTags": [
+        "status-only",
+        "second-brain",
+        "twiniti-hub/aeo",
+        "ai-search",
+        "the",
+        "missing",
+        "piece",
+        "troubleshooting"
+      ]
+    },
+    "memory:memory/2026-04-22.md:11:14": {
+      "key": "memory:memory/2026-04-22.md:11:14",
+      "path": "memory/2026-04-22.md",
+      "startLine": 11,
+      "endLine": 14,
+      "source": "memory",
+      "snippet": "- Service/auth checks on Oracle showed token auth mode is enabled in config, but the gateway still resolves to read-only at runtime, suggesting the remaining issue is in auth/capability bootstrap rather than the visible config files. - Telegram appears to be resolving an old `gemma4` model path from the agent/profile cache rather than the visible top-level config; the relevant stale entry was identified in `~/.openclaw/agents/main/agent/models.json`. - Oracle `openclaw.json` now shows default model `ollama/lfm2.5-thinking:latest`, and `models status` reports only that configured model, but the gateway/logs still mention `gemma4` from older cached profiles or auto-enabled plugin state. - Orac",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.400406152009964,
+      "maxScore": 0.400406152009964,
+      "firstRecalledAt": "2026-04-29T19:48:10.768Z",
+      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
+      "queryHashes": [
+        "e0c49ecab303"
+      ],
+      "recallDays": [
+        "2026-04-29"
+      ],
+      "conceptTags": [
+        "gateway",
+        "service/auth",
+        "read-only",
+        "auth/capability",
+        "agent/profile",
+        "top-level",
+        "openclaw.json",
+        "ollama/lfm2.5-thinking"
+      ]
+    },
+    "memory:memory/2026-04-22.md:1:12": {
+      "key": "memory:memory/2026-04-22.md:1:12",
+      "path": "memory/2026-04-22.md",
+      "startLine": 1,
+      "endLine": 12,
+      "source": "memory",
+      "snippet": "# 2026-04-22 - Morning startup brief: open loop remains the Oracle-side Telegram/router runtime layer that still leaks `skill_update` wrappers into Telegram replies. - Also still open: verify end-to-end YouTube/video processing writes transcripts/summaries to the canonical Second-Brain paths. - Missing file note: `second-brain/references/daily-wrapup-spec.md` was not found. # 2026-04-22 - Morning startup brief: open loop remains the Oracle-side Telegram/router runtime layer that still leaks `skill_update` wrappers into Telegram replies. - Also still open: verify end-to-end YouTube/video processing writes transcripts/summaries to the canonical Second-Brain paths. - Missing file note: `second-",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.38501603007316587,
+      "maxScore": 0.38501603007316587,
+      "firstRecalledAt": "2026-04-29T19:48:10.768Z",
+      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
+      "queryHashes": [
+        "e0c49ecab303"
+      ],
+      "recallDays": [
+        "2026-04-29"
+      ],
+      "conceptTags": [
+        "router",
+        "oracle-side",
+        "telegram/router",
+        "skill-update",
+        "end-to-end",
+        "youtube/video",
+        "transcripts/summaries",
+        "second-brain"
+      ]
+    },
+    "memory:memory/2026-03-26.md:1:5": {
+      "key": "memory:memory/2026-03-26.md:1:5",
+      "path": "memory/2026-03-26.md",
+      "startLine": 1,
+      "endLine": 5,
+      "source": "memory",
+      "snippet": "## 2026-03-26 - Oracle server (129.159.181.219): Telegram integration still returning the same error as of 2026-03-26 13:28 Europe/London. - Memory system issue: `memory_search` unavailable because Ollama embeddings model `mxbai-embed-large` is missing (HTTP 404); fix is likely `ollama pull mxbai-embed-large` or adjust embeddings config. - Oracle server config: removed OpenAI as a model provider (removed `openai:default` auth profile and removed `openai/*` models from agent fallbacks), keeping `openai-codex` OAuth as the only cloud fallback.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3396859288215637,
+      "maxScore": 0.3396859288215637,
+      "firstRecalledAt": "2026-04-29T19:48:10.768Z",
+      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
+      "queryHashes": [
+        "e0c49ecab303"
+      ],
+      "recallDays": [
+        "2026-04-29"
+      ],
+      "conceptTags": [
+        "embedding",
+        "embeddings",
+        "openai",
+        "129.159.181.219",
+        "europe/london",
+        "memory-search",
+        "mxbai-embed-large",
+        "openai-codex"
+      ]
+    },
+    "memory:memory/2026-04-23.md:1:13": {
+      "key": "memory:memory/2026-04-23.md:1:13",
+      "path": "memory/2026-04-23.md",
+      "startLine": 1,
+      "endLine": 13,
+      "source": "memory",
+      "snippet": "# 2026-04-23 - Exchange/Graph startup brief is now working again after fixing `app_settings.exchange_mailbox_email` to `george.broadbent@twiniti.ai`. - Exchange settings are stored in Neon `second-brain.app_settings` and the startup brief should use DB-sourced Exchange creds/identity, not the stale `Secrete.txt` path. - The Exchange auth flow is application-only Graph auth; `/me` is not valid and the mailbox must be queried via `/users/<mailbox>`. - The inbox/calendar issue was caused by an invalid Exchange mailbox value in the DB, not a permission problem. - Current Exchange DB keys now present: `exchange_tenant_id`, `exchange_client_id`, `exchange_client_secret`, `exchange_mailbox_email`.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.27524828910827637,
+      "maxScore": 0.27524828910827637,
+      "firstRecalledAt": "2026-05-01T15:16:32.411Z",
+      "lastRecalledAt": "2026-05-01T15:16:32.411Z",
+      "queryHashes": [
+        "afa95be5b11b"
+      ],
+      "recallDays": [
+        "2026-05-01"
+      ],
+      "conceptTags": [
+        "exchange/graph",
+        "george.broadbent",
+        "twiniti.ai",
+        "second-brain.app-settings",
+        "db-sourced",
+        "creds/identity",
+        "secrete.txt",
+        "application-only"
       ]
     }
   }

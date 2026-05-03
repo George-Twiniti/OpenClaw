@@ -49,6 +49,11 @@ Things like:
 
 - `oracle-web` → Oracle Ubuntu server for web + Telegram work, SSH host alias should point to the current server, not the old `129.159.181.219` host
 
+### New Server
+
+- `193.122.153.210` → new server; SSH keys have been added
+- SSH alias: `Business-Dev` → `ubuntu@193.122.153.210` using `~/.ssh/ssh-key-2026-05-01.key`
+
 ## Why Separate?
 
 Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
