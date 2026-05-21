@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-01T15:16:32.411Z",
+  "updatedAt": "2026-05-21T10:45:26.253Z",
   "entries": {
     "memory:memory/2026-03-16.md:1:11": {
       "key": "memory:memory/2026-03-16.md:1:11",
@@ -42,25 +42,27 @@
       "endLine": 3,
       "source": "memory",
       "snippet": "- Telegram video processing was tightened again: the reply should be summary-only and must not include metadata analysis, policy commentary, or timestamp discussion. - Open loop: the Oracle-side Telegram interface/router likely still has its own prompt that is overriding the skill, so inspect and patch the router prompt/config next.",
-      "recallCount": 6,
+      "recallCount": 7,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 2.5724830687046047,
+      "totalScore": 2.9477855086326596,
       "maxScore": 0.4930062770843506,
       "firstRecalledAt": "2026-04-21T10:46:47.901Z",
-      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
+      "lastRecalledAt": "2026-05-20T12:38:10.117Z",
       "queryHashes": [
         "b94e712c4325",
         "253394e76e84",
         "6c6145b03f4e",
         "54d094803fc3",
         "cdb4e4c7ce3d",
-        "e0c49ecab303"
+        "e0c49ecab303",
+        "b86d2e678be4"
       ],
       "recallDays": [
         "2026-04-21",
         "2026-04-22",
-        "2026-04-29"
+        "2026-04-29",
+        "2026-05-20"
       ],
       "conceptTags": [
         "router",
@@ -114,23 +116,25 @@
       "endLine": 5,
       "source": "memory",
       "snippet": "# 2026-04-21 - Started the daily brief at 09:35 BST. - Recent open loop to carry forward: Oracle-side Telegram router still likely needs patching so YouTube/video messages consistently go to `telegram-video-processing`. - Yesterday’s work to remember: Telegram video processing was tightened to be summary-only, ignore metadata/timestamps, and the Oracle export paths were aligned toward the canonical Second-Brain video directories.",
-      "recallCount": 4,
+      "recallCount": 5,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 1.5641319692134856,
-      "maxScore": 0.41165236234664915,
+      "totalScore": 1.9770628571510314,
+      "maxScore": 0.41293088793754573,
       "firstRecalledAt": "2026-04-22T11:37:31.975Z",
-      "lastRecalledAt": "2026-04-29T19:48:10.768Z",
+      "lastRecalledAt": "2026-05-17T19:00:36.547Z",
       "queryHashes": [
         "54d094803fc3",
         "cdb4e4c7ce3d",
         "5a36804b9c0c",
-        "e0c49ecab303"
+        "e0c49ecab303",
+        "a6fdcae068da"
       ],
       "recallDays": [
         "2026-04-22",
         "2026-04-23",
-        "2026-04-29"
+        "2026-04-29",
+        "2026-05-17"
       ],
       "conceptTags": [
         "router",
@@ -483,6 +487,268 @@
         "creds/identity",
         "secrete.txt",
         "application-only"
+      ]
+    },
+    "memory:memory/2026-04-20.md:1:4": {
+      "key": "memory:memory/2026-04-20.md:1:4",
+      "path": "memory/2026-04-20.md",
+      "startLine": 1,
+      "endLine": 4,
+      "source": "memory",
+      "snippet": "# 2026-04-20 - No separate daily note existed yet. - Carry-forward context from nearby days: continue checking the Oracle Telegram router/export path, and keep Telegram video summaries summary-only with no metadata commentary.",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.7535985440015792,
+      "maxScore": 0.3904446423053741,
+      "firstRecalledAt": "2026-05-17T19:00:36.547Z",
+      "lastRecalledAt": "2026-05-17T19:02:12.223Z",
+      "queryHashes": [
+        "a6fdcae068da",
+        "2fa3a6e6aae8"
+      ],
+      "recallDays": [
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "router",
+        "carry-forward",
+        "router/export",
+        "summary-only",
+        "separate",
+        "existed",
+        "yet",
+        "carry"
+      ]
+    },
+    "memory:memory/2026-03-15.md:1:5": {
+      "key": "memory:memory/2026-03-15.md:1:5",
+      "path": "memory/2026-03-15.md",
+      "startLine": 1,
+      "endLine": 5,
+      "source": "memory",
+      "snippet": "# 2026-03-15 - Default Telegram video handling: auto-extract transcript and create creator-ready summary in Second-Brain (conv/video/YYYY-MM-DD/<slug>.md and summaries/video/YYYY-MM-DD/<slug>.md) unless MG says otherwise. - Reviewed AI conversation archive (Second‑Brain/AI) spanning 2022–2026; recurring themes: digital twins/BIM/EAM, asset lifecycle, data governance, AI productization (Praxis, Lexi, SignalDesk, Second‑Brain workflows), plus marketing/SEO/LinkedIn content and client materials. MG is CEO of Twiniti.",
+      "recallCount": 13,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 4.99369648694992,
+      "maxScore": 0.40086913406848906,
+      "firstRecalledAt": "2026-05-17T19:00:36.547Z",
+      "lastRecalledAt": "2026-05-17T19:00:58.748Z",
+      "queryHashes": [
+        "a6fdcae068da",
+        "0da47c529412",
+        "b2598d7dd620",
+        "763198d94e94",
+        "ddb472975057",
+        "b5d915349f93",
+        "5ddcc86947bb",
+        "7817b1c9ea26",
+        "2880e52d3b3f",
+        "8cf81b15a2eb",
+        "31f916b77f24",
+        "f7258124f7e3",
+        "32be2f24b506"
+      ],
+      "recallDays": [
+        "2026-05-17"
+      ],
+      "conceptTags": [
+        "auto-extract",
+        "creator-ready",
+        "second-brain",
+        "conv/video/yyyy-mm-dd",
+        "summaries/video/yyyy-mm-dd",
+        "brain/ai",
+        "twins/bim/eam",
+        "marketing/seo/linkedin"
+      ]
+    },
+    "memory:memory/2026-05-13.md:1:3": {
+      "key": "memory:memory/2026-05-13.md:1:3",
+      "path": "memory/2026-05-13.md",
+      "startLine": 1,
+      "endLine": 3,
+      "source": "memory",
+      "snippet": "# 2026-05-13 - User preference: when Computer sends a video, use the `video-transcript-downloader` skill to process the transcript first.",
+      "recallCount": 2,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.846553984284401,
+      "maxScore": 0.47539624869823455,
+      "firstRecalledAt": "2026-05-20T11:47:41.931Z",
+      "lastRecalledAt": "2026-05-20T12:38:10.117Z",
+      "queryHashes": [
+        "83796c67af62",
+        "b86d2e678be4"
+      ],
+      "recallDays": [
+        "2026-05-20"
+      ],
+      "conceptTags": [
+        "video-transcript-downloader",
+        "preference",
+        "when",
+        "computer",
+        "sends",
+        "video",
+        "use",
+        "transcript"
+      ]
+    },
+    "memory:memory/2026-05-20.md:1:5": {
+      "key": "memory:memory/2026-05-20.md:1:5",
+      "path": "memory/2026-05-20.md",
+      "startLine": 1,
+      "endLine": 5,
+      "source": "memory",
+      "snippet": "# 2026-05-20 - Patched `telegram-video-processing` so transcript extraction now delegates to the bundled `video-transcript-downloader` skill (`scripts/vtd.js transcript`) instead of doing its own caption download. - Expanded the Telegram transcript path to cover supported non-YouTube yt-dlp sources too. - Verified the Telegram wrapper script still compiles with `python3 -m py_compile`.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.4005659520626068,
+      "maxScore": 0.4005659520626068,
+      "firstRecalledAt": "2026-05-20T12:38:10.117Z",
+      "lastRecalledAt": "2026-05-20T12:38:10.117Z",
+      "queryHashes": [
+        "b86d2e678be4"
+      ],
+      "recallDays": [
+        "2026-05-20"
+      ],
+      "conceptTags": [
+        "telegram-video-processing",
+        "video-transcript-downloader",
+        "scripts/vtd.js",
+        "non-youtube",
+        "yt-dlp",
+        "py-compile",
+        "patched",
+        "telegram"
+      ]
+    },
+    "memory:memory/2026-05-20.md:1:6": {
+      "key": "memory:memory/2026-05-20.md:1:6",
+      "path": "memory/2026-05-20.md",
+      "startLine": 1,
+      "endLine": 6,
+      "source": "memory",
+      "snippet": "# 2026-05-20 - Patched `telegram-video-processing` so transcript extraction now uses Firecrawl first, via `firecrawl scrape` in `scripts/youtube_transcript.py`. - The helper now saves a stub note when Firecrawl doesn't surface transcript text, instead of archiving the whole page body as a fake transcript. - Verified the Telegram wrapper script still compiles with `python3 -m py_compile`. - In practice, Firecrawl on the sample YouTube link returned page metadata but no transcript text, so the Telegram helper now saves a stub note unless Firecrawl actually exposes transcript content.",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.40656575560569763,
+      "maxScore": 0.40656575560569763,
+      "firstRecalledAt": "2026-05-20T12:58:00.882Z",
+      "lastRecalledAt": "2026-05-20T12:58:00.882Z",
+      "queryHashes": [
+        "c21bf097345e"
+      ],
+      "recallDays": [
+        "2026-05-20"
+      ],
+      "conceptTags": [
+        "telegram-video-processing",
+        "scripts/youtube-transcript.py",
+        "py-compile",
+        "patched",
+        "telegram",
+        "video",
+        "processing",
+        "transcript"
+      ]
+    },
+    "memory:memory/2026-03-15-transcript-key-assistant.md:4155:4205": {
+      "key": "memory:memory/2026-03-15-transcript-key-assistant.md:4155:4205",
+      "path": "memory/2026-03-15-transcript-key-assistant.md",
+      "startLine": 4155,
+      "endLine": 4205,
+      "source": "memory",
+      "snippet": "### 2026-03-15T20:54:25.992000+00:00 toolResult { \"id\": \"126101ee-5399-4291-ab63-ff325e557b49\", \"agentId\": \"main\", \"sessionKey\": \"agent:main:main\", \"name\": \"daily-startup-brief-exchange\", \"enabled\": true, \"createdAtMs\": 1773608065929, \"updatedAtMs\": 1773608065929, \"schedule\": { \"kind\": \"cron\", \"expr\": \"0 8 * * *\", \"tz\": \"Europe/Lisbon\" }, \"sessionTarget\": \"isolated\", \"wakeMode\": \"now\", \"payload\": { \"kind\": \"agentTurn\", \"message\": \"Startup briefing (08:00 Europe/Lisbon).\\n1) Run: python3 /home/george/.openclaw/workspace/scripts/startup_brief.py\\n2) Summarize: urgent items + upcoming meetings (next 24h from Exchange calendar)\\n3) Deliver a concise br",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3640369117259979,
+      "maxScore": 0.3640369117259979,
+      "firstRecalledAt": "2026-05-21T10:45:26.253Z",
+      "lastRecalledAt": "2026-05-21T10:45:26.253Z",
+      "queryHashes": [
+        "e46d3a1dfe1c"
+      ],
+      "recallDays": [
+        "2026-05-21"
+      ],
+      "conceptTags": [
+        "2026-03-15t20",
+        "25.992000",
+        "daily-startup-brief-exchange",
+        "europe/lisbon",
+        "home/george",
+        "transcript",
+        "key",
+        "assistant.md"
+      ]
+    },
+    "memory:memory/2026-03-15-transcript-key-assistant.md:4113:4166": {
+      "key": "memory:memory/2026-03-15-transcript-key-assistant.md:4113:4166",
+      "path": "memory/2026-03-15-transcript-key-assistant.md",
+      "startLine": 4113,
+      "endLine": 4166,
+      "source": "memory",
+      "snippet": "Sender (untrusted metadata): ```json { \"label\": \"openclaw-control-ui\", \"id\": \"openclaw-control-ui\" } ``` [Sun 2026-03-15 20:53 GMT+0] you willl see events on all three calendars. this will be when you come online ### 2026-03-15T20:53:13.943000+00:00 [[reply_to_current]] Understood — “startup briefing when I come online.” I can do that, but I need **calendar access** first: - **Exchange calendar**: I can use the Graph app we just validated ✅ - **Google calendars (both Gmail accounts)**: not configured yet. I’ll need Google Calendar API OAuth to read events. If you want **all three calendars**, please choose one: **Option A (fastest now):** Start daily startup brief **with email",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3610810905694961,
+      "maxScore": 0.3610810905694961,
+      "firstRecalledAt": "2026-05-21T10:45:26.253Z",
+      "lastRecalledAt": "2026-05-21T10:45:26.253Z",
+      "queryHashes": [
+        "e46d3a1dfe1c"
+      ],
+      "recallDays": [
+        "2026-05-21"
+      ],
+      "conceptTags": [
+        "openclaw-control-ui",
+        "2026-03-15t20",
+        "13.943000",
+        "reply-to-current",
+        "transcript",
+        "key",
+        "assistant.md",
+        "sender"
+      ]
+    },
+    "memory:memory/2026-03-15-transcript-extract.md:7654:7703": {
+      "key": "memory:memory/2026-03-15-transcript-extract.md:7654:7703",
+      "path": "memory/2026-03-15-transcript-extract.md",
+      "startLine": 7654,
+      "endLine": 7703,
+      "source": "memory",
+      "snippet": "\"sessionKey\": \"agent:main:main\", \"name\": \"daily-startup-brief-exchange\", \"enabled\": true, \"createdAtMs\": 1773608065929, \"updatedAtMs\": 1773608065929, \"schedule\": { \"kind\": \"cron\", \"expr\": \"0 8 * * *\", \"tz\": \"Europe/Lisbon\" }, \"sessionTarget\": \"isolated\", \"wakeMode\": \"now\", \"payload\": { \"kind\": \"agentTurn\", \"message\": \"Startup briefing (08:00 Europe/Lisbon).\\n1) Run: python3 /home/george/.openclaw/workspace/scripts/startup_brief.py\\n2) Summarize: urgent items + upcoming meetings (next 24h from Exchange calendar)\\n3) Deliver a concise brief to chat.\\nIf errors, report the error.\", \"timeoutSeconds\": 900 }, \"delivery\": { \"mode\": \"announce\" },",
+      "recallCount": 1,
+      "dailyCount": 0,
+      "groundedCount": 0,
+      "totalScore": 0.3561243265867233,
+      "maxScore": 0.3561243265867233,
+      "firstRecalledAt": "2026-05-21T10:45:26.253Z",
+      "lastRecalledAt": "2026-05-21T10:45:26.253Z",
+      "queryHashes": [
+        "e46d3a1dfe1c"
+      ],
+      "recallDays": [
+        "2026-05-21"
+      ],
+      "conceptTags": [
+        "2026-03-15-transcript-extract.md",
+        "daily-startup-brief-exchange",
+        "europe/lisbon",
+        "home/george",
+        "transcript",
+        "extract.md",
+        "sessionkey",
+        "agent:main:main"
       ]
     }
   }

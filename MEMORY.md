@@ -3,6 +3,8 @@
 ## Automation agreements (rolling)
 - OpenClaw config backed up to `~/.openclaw/workspace/backups/config/` after model fix (2026-03-30). Config switched from `ollama/qwen3:8b` to `ollama/qwen3:4b` as primary model; 8B was not installed despite being configured.
 - Maintain an “ops recap” after each session and keep this automation-agreements list updated so context persists across sessions. (Agreed 2026-03-16)
+- When Computer sends a video, use the `video-transcript-downloader` skill to process the transcript first. (2026-05-13)
+- When Computer sends a video, extract the transcript and send the transcript-focused result back to Computer. (2026-05-21)
 - Daily startup brief (08:00 Europe/Lisbon) runs `startup_brief.py` (email summary). (Corrected 2026-03-17)
 - Daily routine includes: run the startup brief and report on **action‑required** emails + calendar to shape today’s agenda. (Confirmed 2026-03-17)
 - Weekly bills scan (Fri 09:00 Europe/Lisbon) runs `bills_scan.py` for SIMAR water, EDP electric, Vodafone; applies to both Gmail accounts. (Confirmed 2026-03-16)
@@ -20,6 +22,10 @@
 - Oracle Telegram export now mirrors canonical Second-Brain video paths under `/home/ubuntu/.openclaw/workspace/second-brain/conv/video/...` and `/home/ubuntu/.openclaw/workspace/second-brain/summaries/video/...`; next step is to verify the Oracle writer is saving there. (2026-04-16)
 - Telegram video processing should treat the YouTube link as the task anchor and ignore sender metadata/timestamps in the reply; the Telegram reply should be summary-only with no metadata analysis or policy commentary. If warnings still appear, the Oracle Telegram router prompt needs patching. (2026-04-17)
 - Two-way Tailnet bridge for transcript jobs was built on 2026-04-23. Oracle bridge base URL: `http://vnic002.taild942c7.ts.net:8787`; local bridge base URL: `http://gbroadbent5-1.taild942c7.ts.net:8788`. The local bridge needed a real `/jobs` API (not just `/status`) before the second claw could use it.
+- vnic002.taild942c7.ts.net is the always-on central hub for the claws; Peggy is a node client of vnic002, not the hub.
+- Gmail env files were copied to vnic002 on 2026-05-05 at `/home/ubuntu/.openclaw/workspace/secrets/gmail.env` and `/home/ubuntu/.openclaw/workspace/secrets/gmail_ical.env`.
+- Session-closeout is the reliable pattern for preserving session state after resets; AEO / wiki / ai-landscape are set up on GitHub and use `dist/` as the production output convention.
+- Orphaned OpenClaw transcripts live under `~/.openclaw/agents/main/sessions` as `.jsonl.reset.*` / `.jsonl.deleted.*`; most are heartbeat/no-op churn, but the durable ones carry infrastructure recoveries and should be distilled into memory immediately.
 - GitHub push closeout on 2026-04-23 was left incomplete: OpenClaw push was blocked by a secret in history, and Second-Brain push needed a rebase before push.
 
 ## 2026-03-13
