@@ -49,6 +49,9 @@ Reply with ONLY the slug, nothing else. Examples: "vendor-pitch", "api-design", 
       prompt,
       timeoutMs: 15_000, // 15 second timeout
       runId: `slug-gen-${Date.now()}`,
+      // SECURITY: session transcripts can contain untrusted channel content.
+      // This run only needs a short text slug — never enable tools here.
+      disableTools: true,
     });
 
     // Extract text from payloads
